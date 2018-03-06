@@ -50,12 +50,6 @@ class Client extends \Ease\Molecule
      * @var array 
      */
     public $lastResult = [];
-    
-    /**
-     * Last Request response status
-     * @var string 
-     */
-    public $lastStatus = null;
 
     /**
      * 
