@@ -50,6 +50,12 @@ class Client extends \Ease\Molecule
      * @var array 
      */
     public $lastResult = [];
+    
+    /**
+     * Last Request response status
+     * @var string 
+     */
+    public $lastStatus = null;
 
     /**
      * 
@@ -88,6 +94,10 @@ class Client extends \Ease\Molecule
         if ($responseRaw['status'] == 'error') {
             
             $this->logError($responseRaw['error']);
+        }
+        
+        if(isset($responseRaw['status'])){
+            $this->lastStatus = $responseRaw['status'];
         }
         
         $this->lastResult = array_key_exists('data', $responseRaw) ?  $responseRaw['data']  : null ; 
