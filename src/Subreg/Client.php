@@ -94,7 +94,7 @@ class Client extends \Ease\Molecule
             $this->lastStatus = $responseRaw['status'];
         }
         
-        $this->lastResult = array_key_exists('data', $responseRaw) ?  $responseRaw['data']  : null ; 
+        $this->lastResult = array_key_exists('data', $responseRaw) ?  $responseRaw['data']  : array_key_exists('status', $responseRaw) ? $responseRaw['status'] : null ; 
         
         return $this->lastResult;
     }
