@@ -63,6 +63,8 @@ Jak to celé funguje ?
 Ústřední komponentou celé knihovny je Třída Client, která je schopna pomocí 
 PHP rozšíření SoapClient komunikovat se soap.subreg.cz.
 
+http://demoreg.net/en/settings/settings
+
 
 Docker
 ------

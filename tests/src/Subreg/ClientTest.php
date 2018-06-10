@@ -54,4 +54,21 @@ class ClientTest extends \Test\Ease\MoleculeTest
     {
         $this->object->login();
     }
+    
+    /**
+     * @covers Subreg\Client::checkDomain
+     */
+    public function testCheckDomain()
+    {
+        return $this->object->checkDomain('spoje.net');
+    }
+
+    /**
+     * @covers Subreg\Client::domainList
+     */
+    public function testDomainsList()
+    {
+        return $this->object->domainsList();
+    }
+    
 }

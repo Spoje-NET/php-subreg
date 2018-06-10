@@ -78,27 +78,35 @@ class Client extends \Ease\Molecule
      */
     public function call($command, $params = [])
     {
-        $this->lastError = null;
+        $this->lastError  = null;
         $this->lastStatus = null;
         $this->lastResult = null;
         if ($this->token && !array_key_exists('ssid', $params)) {
             $params['ssid'] = $this->token;
         }
         $responseRaw = $this->soaper->__call($command, ['data' => $params]);
-        if ($responseRaw['status'] == 'error') {
-            
-            $this->logError($responseRaw['error']);
-        }
-        
-        if(isset($responseRaw['status'])){
+
+        if (isset($responseRaw['status'])) {
             $this->lastStatus = $responseRaw['status'];
+            if ($this->lastStatus == 'error') {
+                $this->logError($responseRaw['error']);
+            }
         }
-        
-        $this->lastResult = array_key_exists('data', $responseRaw) ?  $responseRaw['data']  : array_key_exists('status', $responseRaw) ? $responseRaw['status'] : null ; 
-        
+
+        if (array_key_exists('data', $responseRaw)) {
+            $this->lastResult = $responseRaw['data'];
+        } else {
+            $this->lastResult = $this->lastStatus;
+        }
+
         return $this->lastResult;
     }
 
+    /**
+     * log Error
+     * 
+     * @param array $errorData
+     */
     public function logError($errorData)
     {
         $this->lastError = $errorData;
@@ -124,5 +132,31 @@ class Client extends \Ease\Molecule
             $result      = true;
         }
         return $result;
+    }
+
+    /**
+     *  Check if domain is available or not
+     * 
+     * @link https://subreg.cz/manual/?cmd=Check_Domain Command: Check_Domain
+     * 
+     * @param string $domain
+     * 
+     * @return array
+     */
+    public function checkDomain($domain)
+    {
+        return $this->call('Check_Domain', ['domain' => $domain]);
+    }
+
+    /**
+     *  Get all domains from your account
+     * 
+     * @link https://subreg.cz/manual/?cmd=Domains_List Command: Domains_List
+     * 
+     * @return array
+     */
+    public function domainsList()
+    {
+        return $this->call('Domains_List');
     }
 }
