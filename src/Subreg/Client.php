@@ -149,6 +149,63 @@ class Client extends \Ease\Molecule
     }
 
     /**
+     * Create a new domain
+     * 
+     * @link https://subreg.cz/manual/?cmd=Create_Domain Order: Create_Domain
+     * 
+     * @param string $domain
+     * @param string $registrantID
+     * @param string $contactsAdminID
+     * @param string $contactsTechID
+     * @param string $authID
+     * @param array  $nsHosts          Hostnames of nameservers: ['ns.domain.cz','ns2.domain.cz']
+     * @param string $nsset            Nameserver Set (only for FRED registries (.CZ,.EE,...))
+     * @param int    $period            
+     * 
+     * @return array
+     */
+    public function registerDomain($domain, $registrantID, $contactsAdminID,
+                                   $contactsTechID, $authID, $nsHosts = [],
+                                   $nsset = null, $period = 1)
+    {
+
+        foreach ($nsHosts as $host) {
+            $ns[]["hostname"] = $host;
+        }
+
+        $order = array(
+            "domain" => $domain,
+            "type" => "Create_Domain",
+            "params" => array(
+                "registrant" => array(
+                    "id" => $registrantID,
+                ),
+                "contacts" => array(
+                    "admin" => array(
+                        "id" => $contactsAdminID,
+                    ),
+                    "tech" => array(
+                        "id" => $contactsTechID,
+                    ),
+                ),
+                "ns" => array(
+                    "hosts" => $ns,
+                ),
+                "params" => array(
+                    "authid" => $authID,
+                ),
+                "period" => $period
+            )
+        );
+
+        if (!empty($nsset)) {
+            $order['params']['ns']['nsset'] = $nsset;
+        }
+
+        return $this->call('Make_Order', ['order' => $order]);
+    }
+
+    /**
      *  Get all domains from your account
      * 
      * @link https://subreg.cz/manual/?cmd=Domains_List Command: Domains_List
