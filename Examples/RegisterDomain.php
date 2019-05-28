@@ -18,7 +18,8 @@ $unexistentDomain = strtolower(\Ease\Sand::randomString()).'.cz';
 
 $nsHosts = array("ns.spoje.net", "ns2.spoje.net");
 
-print_r($client->registerDomain($unexistentDomain, 'G-000001', 'G-000001', 'G-000001', 'ukulele', $nsHosts));
+print_r($client->registerDomain($unexistentDomain, 'G-000001', 'G-000001',
+        'G-000001', 'ukulele', $nsHosts));
 
 
 $response = $client->checkDomain($unexistentDomain);

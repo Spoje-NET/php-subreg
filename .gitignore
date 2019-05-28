@@ -1,3 +1,7 @@
 /nbproject/private/
 /vendor/
 /composer.lock
+/debian/php-subreg/
+/debian/php-subreg.debhelper.log
+/debian/php-subreg.substvars
+/debian/debhelper-build-stamp

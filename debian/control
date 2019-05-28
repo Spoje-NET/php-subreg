@@ -1,0 +1,16 @@
+Source: php-subreg
+Build-Depends: debhelper (>= 7.0.50~)
+Section: web
+Standards-Version: 3.9.8
+Maintainer: Vítězslav Dvořák <info@vitexsoftware.cz>
+Uploaders: Vitex <vitex@hippy.cz>
+Priority: optional
+Homepage: https://github.com/Spoje-NET/php-subreg
+
+Package: php-subreg
+Depends: ${misc:Depends}, ease-frammework
+Architecture: all
+Section: web
+Priority: optional
+Description: PHP Client Library for soap.subreg.cz
+ Provide classes for several domain/customer related operations

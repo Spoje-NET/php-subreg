@@ -1,0 +1,14 @@
+Format-Specification: http://wiki.debian.org/Proposals/CopyrightFormat?action=recall&rev=143
+Upstream-Name: php-subreg
+Upstream-Source: https://github.com/Spoje-NET/php-subreg/archive/master.zip
+
+Files: *
+Homepage: https://github.com/Spoje-NET/php-subreg
+Copyright:
+  (c) 2015-2019 Vítězslav Dvořák (v.s.cz)
+License: MIT 
+
+License: MIT
+ On Debian systems the full text of the GNU General Public License can be found
+ in the `/usr/share/common-licenses/MIT' file.
+

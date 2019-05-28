@@ -16,6 +16,12 @@ namespace Subreg;
 class Client extends \Ease\Molecule
 {
     /**
+     * ClientLibrary version
+     * @var string 
+     */
+    static public $frameworkVersion = '0.1';
+
+    /**
      * Object Configuration
      * @var array
      */
