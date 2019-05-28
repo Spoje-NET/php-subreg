@@ -10,27 +10,12 @@
     ],
     "version": "0.1",
     "require": {
-        "php": ">= 5.6",
         "ext-soap": "*",
-        "vitexsoftware/ease-framework": "dev-master"
+        "deb/ease-framework": "*"
     },
     "autoload": {
         "psr-4": {
-            "Subreg\\": "src/Subreg/"
+            "Subreg\\": "./Subreg/"
         }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Test\\Ease\\": "vendor/vitexsoftware/ease-framework/tests/src/Ease",
-            "Test\\Subreg\\": "testing/src/Subreg/",
-            "Test\\": "testing/"
-        }
-    },
-    "require-dev": {
-        "phpunit/php-token-stream": "~1.2",
-        "phpunit/phpunit": "5.3.*",
-        "phpunit/phpunit-skeleton-generator": "*",
-        "jakub-onderka/php-parallel-lint": "^0.9.2",
-        "jakub-onderka/php-console-highlighter": "^0.3.2"
     }
 }

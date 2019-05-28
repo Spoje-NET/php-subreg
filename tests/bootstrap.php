@@ -24,5 +24,5 @@ if (!defined('EASE_LOGGER')) {
     define('EASE_LOGGER', 'syslog');
 }
 
-\Ease\Shared::instanced()->loadConfig('../config.json');
+\Ease\Shared::instanced()->loadConfig('../config.json',true);
 
