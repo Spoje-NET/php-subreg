@@ -8,14 +8,14 @@
             "email": "info@vitexsoftware.cz"
         }
     ],
-    "version": "0.1",
+    "version": "0.2",
     "require": {
         "ext-soap": "*",
         "deb/ease-framework": "*"
     },
     "autoload": {
         "psr-4": {
-            "Subreg\\": "./Subreg/"
+            "Subreg\\": "."
         }
     }
 }
