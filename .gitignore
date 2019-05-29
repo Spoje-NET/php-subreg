@@ -5,3 +5,5 @@
 /debian/php-subreg.debhelper.log
 /debian/php-subreg.substvars
 /debian/debhelper-build-stamp
+/tests/.phpunit.result.cache
+/.phpunit.result.cache

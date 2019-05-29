@@ -31,11 +31,44 @@ class ClientTest extends \Test\Ease\MoleculeTest
     }
 
     /**
+     * Test Constructor
+     *
+     * @depends testLogBanner
+     * @covers Subreg\Client::__construct
+     */
+    public function testConstructor()
+    {
+        $classname = get_class($this->object);
+        // Get mock, without the constructor being called
+        $mock      = $this->getMockBuilder($classname)
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+        $mock->__construct(\Ease\Shared::instanced()->configuration);
+        $this->assertNotEmpty($mock->token);
+    }
+
+    /**
+     * @covers Subreg\Client::logBanner
+     */
+    public function testLogBanner()
+    {
+        $this->assertTrue($this->object->logBanner(addslashes(get_class($this))));
+    }
+
+    /**
      * @covers Subreg\Client::call
      */
     public function testCall()
     {
-        $this->object->call('Get_Credit');
+        $fail    = $this->object->call('NonExist');
+        $this->assertEquals(['error' => [
+                'errormsg' => 'Invalid method called',
+                'errorcode' => [
+                    'major' => '500', 'minor' => '107']
+            ]
+            ], $fail);
+        $success = $this->object->call('Get_Credit');
+        $this->arrayHasKey(array_key_exists('credit', $success));
     }
 
     /**
@@ -43,8 +76,10 @@ class ClientTest extends \Test\Ease\MoleculeTest
      */
     public function testLogError()
     {
-        $this->object->logError(['errorcode' => ['major' => 999, 'minor' => 000],
-            'errormsg' => 'some error message']);
+        $error = ['errorcode' => ['major' => 999, 'minor' => 000],
+            'errormsg' => 'some error message'];
+        $this->object->logError($error);
+        $this->assertEquals($error, $this->object->lastError);
     }
 
     /**
@@ -52,7 +87,7 @@ class ClientTest extends \Test\Ease\MoleculeTest
      */
     public function testLogin()
     {
-        $this->object->login();
+        $this->assertTrue($this->object->login());
     }
 
     /**
@@ -60,14 +95,42 @@ class ClientTest extends \Test\Ease\MoleculeTest
      */
     public function testCheckDomain()
     {
-        return $this->object->checkDomain('spoje.net');
+        $checkResult = $this->object->checkDomain('spoje.net');
+        $this->assertTrue(array_key_exists('name', $checkResult) && array_key_exists('price',
+                $checkResult));
     }
 
     /**
-     * @covers Subreg\Client::domainList
+     * @covers Subreg\Client::domainsList
      */
     public function testDomainsList()
     {
-        return $this->object->domainsList();
+        $domainlist = $this->object->domainsList();
+        $this->assertTrue(array_key_exists('domains', $domainlist) && array_key_exists('count',
+                $domainlist));
+    }
+
+    /**
+     * @covers Subreg\Client::pricelist
+     */
+    public function testPricelist()
+    {
+        $pricelist = $this->object->pricelist();
+        $this->assertTrue(array_key_exists('cz', $pricelist));
+    }
+
+    /**
+     * @covers Subreg\Client::registerDomain
+     */
+    public function testRegisterDomain()
+    {
+        $unexistentDomain = strtolower(\Ease\Sand::randomString()).'.cz';
+
+        $nsHosts = array("ns.spoje.net", "ns2.spoje.net");
+
+        $result = $this->object->registerDomain($unexistentDomain, 'G-000001',
+            'G-000001', 'G-000001', 'ukulele', $nsHosts);
+
+        $this->assertTrue( array_key_exists('orderid', $result));
     }
 }

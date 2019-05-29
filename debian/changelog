@@ -1,5 +1,5 @@
-php-subreg (0.2-1) UNRELEASED; urgency=medium
+php-subreg (0.3) unstable; urgency=medium
 
-  * debianized
+  * new support for Pricelist command 
 
- -- Vítězslav Dvořák <info@vitexsoftware.cz>  Mon, 04 Mar 2019 00:01:29 +0100
+ -- Vítězslav Dvořák <vitex@develoid.jinonice.czf>  Wed, 29 May 2019 16:21:24 +0200

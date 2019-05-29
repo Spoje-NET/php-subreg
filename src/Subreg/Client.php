@@ -19,7 +19,7 @@ class Client extends \Ease\Molecule
      * ClientLibrary version
      * @var string 
      */
-    static public $frameworkVersion = '0.1';
+    static public $libVersion = '0.3';
 
     /**
      * Object Configuration
@@ -75,6 +75,20 @@ class Client extends \Ease\Molecule
     }
 
     /**
+     * Add Info about used user, server and libraries
+     *
+     * @param string $additions Additional note text
+     * 
+     * @return boolean was logged ?
+     */
+    public function logBanner($additions = null)
+    {
+        return $this->addStatusMessage('API '.str_replace('://',
+                '://'.$this->config['login'].'@', $this->config['uri']).' php-subreg v'.self::$libVersion.' EasePHP Framework v'.\Ease\Atom::$frameworkVersion.' '.$additions,
+            'debug');
+    }
+
+    /**
      * API Call
      * 
      * @param string $command command to execute
@@ -92,17 +106,22 @@ class Client extends \Ease\Molecule
         }
         $responseRaw = $this->soaper->__call($command, ['data' => $params]);
 
+
         if (isset($responseRaw['status'])) {
             $this->lastStatus = $responseRaw['status'];
-            if ($this->lastStatus == 'error') {
-                $this->logError($responseRaw['error']);
+            switch ($responseRaw['status']) {
+                case 'ok':
+                    if (array_key_exists('data', $responseRaw)) {
+                        $this->lastResult = $responseRaw['data'];
+                    } else {
+                        $this->lastResult = $this->lastStatus;
+                    }
+                    break;
+                case 'error':
+                    $this->logError($responseRaw['error']);
+                    $this->lastResult = ['error' => $responseRaw['error']];
+                    break;
             }
-        }
-
-        if (array_key_exists('data', $responseRaw)) {
-            $this->lastResult = $responseRaw['data'];
-        } else {
-            $this->lastResult = $this->lastStatus;
         }
 
         return $this->lastResult;
@@ -221,5 +240,17 @@ class Client extends \Ease\Molecule
     public function domainsList()
     {
         return $this->call('Domains_List');
+    }
+
+    /**
+     *  Get pricelist from your account
+     * 
+     * @link https://subreg.cz/manual/?cmd=Pricelist Command: Pricelist
+     * 
+     * @return array
+     */
+    public function pricelist()
+    {
+        return $this->call('Pricelist');
     }
 }
