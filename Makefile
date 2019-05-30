@@ -21,12 +21,13 @@ apigen:
 	VERSION=`cat debian/composer.json | grep version | awk -F'"' '{print $4}'`; \
 	apigen generate --source src --destination docs --title "subreg ${VERSION}" --charset UTF-8 --access-levels public --access-levels protected --php --tree
 
+test: pretest phpunit
+
 pretest:
 	composer --ansi --no-interaction update
 
-phpunit:
-	composer update
-	vendor/bin/phpunit --bootstrap testing/bootstrap.php
+phpunit: pretest
+	vendor/bin/phpunit --bootstrap tests/bootstrap.php
 
 deb:
 	dpkg-buildpackage -A -us -uc
