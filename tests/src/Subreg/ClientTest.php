@@ -120,6 +120,15 @@ class ClientTest extends \Test\Ease\MoleculeTest
     }
 
     /**
+     * @covers Subreg\Client::getPricelist
+     */
+    public function testGetPricelist()
+    {
+        $pricelist = $this->object->getPricelist('???');
+        $this->assertTrue(array_key_exists('cz', $pricelist));
+    }
+
+    /**
      * @covers Subreg\Client::registerDomain
      */
     public function testRegisterDomain()
@@ -131,8 +140,14 @@ class ClientTest extends \Test\Ease\MoleculeTest
         $result = $this->object->registerDomain($unexistentDomain, 'G-000001',
             'G-000001', 'G-000001', 'ukulele', $nsHosts);
 
-        $this->assertTrue( array_key_exists('orderid', $result));
+        $this->assertTrue(array_key_exists('orderid', $result));
     }
-    
- 
+
+    /**
+     * @covers Subreg\Client::renewDomain
+     */
+    public function testRenewDomain()
+    {
+        $this->assertArrayHasKey('orderid',$this->object->renewDomain('vitexsoftware.cz',1));
+    }
 }

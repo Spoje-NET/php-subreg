@@ -253,4 +253,34 @@ class Client extends \Ease\Molecule
     {
         return $this->call('Pricelist');
     }
+    
+    /**
+     *  Get specified pricelist from your account
+     * 
+     * @link https://subreg.cz/manual/?cmd=Get_Pricelist Command: Get_Pricelist
+     * 
+     * @param string requested pricelist name
+     * 
+     * @return array
+     */
+    public function getPricelist($pricelist)
+    {
+        return $this->call('Get_Pricelist', ['pricelist'=>$pricelist]);
+    }
+    
+    /**
+     * 
+     * @link https://subreg.cz/manual/?cmd=Renew_Domain Command: Renew_Domain
+     * 
+     * @param string $domain name
+     * @param int $years
+     * 
+     * @return type
+     */
+    public function renewDomain(string $domain, int $years = 1)
+    {
+        return $this->call('Make_Order', ['order' => ['domain' => $domain, 'params' => ['period' => $years], 'type' => 'Renew_Domain']] );
+    }
+    
+    
 }

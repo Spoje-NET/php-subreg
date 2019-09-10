@@ -15,6 +15,7 @@ require_once '../vendor/autoload.php';
 $client = new Client(\Ease\Shared::instanced()->configuration);
 
 
+print_r($client->getPricelist('KONCOVA'));
 
-print_r($client->pricelist());
+//print_r($client->pricelist());
 
