@@ -8,7 +8,7 @@
             "email": "info@vitexsoftware.cz"
         }
     ],
-    "version": "0.2",
+    "version": "0.4",
     "require": {
         "ext-soap": "*",
         "deb/ease-framework": "*"

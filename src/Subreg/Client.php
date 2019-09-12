@@ -19,7 +19,7 @@ class Client extends \Ease\Molecule
      * ClientLibrary version
      * @var string 
      */
-    static public $libVersion = '0.3';
+    static public $libVersion = '0.4';
 
     /**
      * Object Configuration

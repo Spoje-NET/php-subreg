@@ -1,3 +1,10 @@
+php-subreg (0.4) UNRELEASED; urgency=medium
+
+  * +SetAutoRenew
+  * +RenewDomain
+
+ -- Vítězslav Dvořák <vitex@develoid.jinonice.czf>  Thu, 12 Sep 2019 13:34:35 +0200
+
 php-subreg (0.3) unstable; urgency=medium
 
   * new support for Pricelist command 
