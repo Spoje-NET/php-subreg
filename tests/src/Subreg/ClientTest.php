@@ -13,12 +13,22 @@ class ClientTest extends \Test\Ease\MoleculeTest
     protected $object;
 
     /**
+     * Currently registered domains
+     * @var array 
+     */
+    public $testDomains = [];
+
+    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp(): void
     {
         $this->object = new \Subreg\Client(\Ease\Shared::instanced()->configuration);
+        $domainsRaw   = $this->object->call('Domains_List');
+        if (array_key_exists('domains', $domainsRaw)) {
+            $this->testDomains = $domainsRaw['domains'];
+        }
     }
 
     /**
@@ -69,6 +79,9 @@ class ClientTest extends \Test\Ease\MoleculeTest
             ], $fail);
         $success = $this->object->call('Get_Credit');
         $this->arrayHasKey(array_key_exists('credit', $success));
+
+        $success = $this->object->call('In_Subreg',
+            ['domain' => 'php-subreg.cz']);
     }
 
     /**
@@ -120,15 +133,6 @@ class ClientTest extends \Test\Ease\MoleculeTest
     }
 
     /**
-     * @covers Subreg\Client::getPricelist
-     */
-    public function testGetPricelist()
-    {
-        $pricelist = $this->object->getPricelist('???');
-        $this->assertTrue(array_key_exists('cz', $pricelist));
-    }
-
-    /**
      * @covers Subreg\Client::registerDomain
      */
     public function testRegisterDomain()
@@ -138,7 +142,7 @@ class ClientTest extends \Test\Ease\MoleculeTest
         $nsHosts = array("ns.spoje.net", "ns2.spoje.net");
 
         $result = $this->object->registerDomain($unexistentDomain, 'G-000001',
-            'G-000001', 'G-000001', 'ukulele', $nsHosts);
+            'G-000001', 'G-000001', 'ukulele', $nsHosts, 'NSS:ARA-LABS:1');
 
         $this->assertTrue(array_key_exists('orderid', $result));
     }
@@ -148,6 +152,16 @@ class ClientTest extends \Test\Ease\MoleculeTest
      */
     public function testRenewDomain()
     {
-        $this->assertArrayHasKey('orderid',$this->object->renewDomain('vitexsoftware.cz',1));
+        $this->assertNotEmpty($this->object->renewDomain('php-subreg.cz', 1));
+    }
+
+    /**
+     * @covers Subreg\Client::setAutoRenew
+     */
+    public function testSetAutoRenew()
+    {
+        $domain = current($this->testDomains);
+        $this->assertEquals('ok',
+            $this->object->setAutoRenew($domain['name'], 'RENEWONCE'));
     }
 }

@@ -10,12 +10,12 @@ namespace Subreg;
 
 require_once '../vendor/autoload.php';
 
-\Ease\Shared::instanced()->loadConfig('../config.json');
+\Ease\Shared::instanced()->loadConfig('../tests/config.json');
 
 $client = new Client(\Ease\Shared::instanced()->configuration);
 
 
-print_r($client->getPricelist('KONCOVA'));
+print_r($client->pricelist('KONCOVA'));
 
 //print_r($client->pricelist());
 

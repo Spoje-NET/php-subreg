@@ -1,0 +1,8 @@
+{
+    "EASE_APPNAME": "PHP Subreg",
+    "EASE_LOGGER": "syslog|console",
+    "location": "https://ote-soap.subreg.cz/cmd.php",
+    "uri": "https://ote-soap.subreg.cz/soap",
+    "login": "php-subreg",
+    "password": "661a2725fb"
+}

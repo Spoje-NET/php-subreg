@@ -1,9 +1,9 @@
 <?php
 /**
- * Subreg - Usage Example
+ * Subreg - Client Class
  *
  * @author     Vítězslav Dvořák <info@vitexsoftware.cz>
- * @copyright  (C) 2018 Spoje.Net
+ * @copyright  (C) 2018-2019 Spoje.Net
  */
 
 namespace Subreg;
@@ -84,8 +84,8 @@ class Client extends \Ease\Molecule
     public function logBanner($additions = null)
     {
         return $this->addStatusMessage('API '.str_replace('://',
-                '://'.$this->config['login'].'@', $this->config['uri']).' php-subreg v'.self::$libVersion.' EasePHP Framework v'.\Ease\Atom::$frameworkVersion.' '.$additions,
-            'debug');
+                    '://'.$this->config['login'].'@', $this->config['uri']).' php-subreg v'.self::$libVersion.' EasePHP Framework v'.\Ease\Atom::$frameworkVersion.' '.$additions,
+                'debug');
     }
 
     /**
@@ -96,7 +96,7 @@ class Client extends \Ease\Molecule
      * 
      * @return array
      */
-    public function call($command, $params = [])
+    public function call(string $command, array $params = [])
     {
         $this->lastError  = null;
         $this->lastStatus = null;
@@ -243,44 +243,47 @@ class Client extends \Ease\Molecule
     }
 
     /**
-     *  Get pricelist from your account
+     * Get pricelist from your account
      * 
      * @link https://subreg.cz/manual/?cmd=Pricelist Command: Pricelist
      * 
-     * @return array
+     * @return array pricelist details
      */
     public function pricelist()
     {
         return $this->call('Pricelist');
     }
-    
+
     /**
-     *  Get specified pricelist from your account
-     * 
-     * @link https://subreg.cz/manual/?cmd=Get_Pricelist Command: Get_Pricelist
-     * 
-     * @param string requested pricelist name
-     * 
-     * @return array
-     */
-    public function getPricelist($pricelist)
-    {
-        return $this->call('Get_Pricelist', ['pricelist'=>$pricelist]);
-    }
-    
-    /**
+     * Renew a existing domain from your account
      * 
      * @link https://subreg.cz/manual/?cmd=Renew_Domain Command: Renew_Domain
      * 
      * @param string $domain name
      * @param int $years
      * 
-     * @return type
+     * @return string|array OK or Result array
      */
     public function renewDomain(string $domain, int $years = 1)
     {
-        return $this->call('Make_Order', ['order' => ['domain' => $domain, 'params' => ['period' => $years], 'type' => 'Renew_Domain']] );
+        return $this->call('Make_Order',
+                ['order' => ['domain' => $domain, 'params' => ['period' => $years],
+                    'type' => 'Renew_Domain']]);
     }
-    
-    
+
+    /**
+     * Set autorenew policy for your domain. 
+     * 
+     * @link https://subreg.cz/manual/?cmd=Set_Autorenew Command: Set_Autorenew
+     * 
+     * @param string $domain
+     * @param string $renew  only EXPIRE, AUTORENEW or RENEWONCE
+     * 
+     * @return string|array OK or Result array
+     */
+    public function setAutorenew(string $domain, string $renew)
+    {
+        return $this->call('Set_Autorenew',
+                ['domain' => $domain, 'autorenew' => $renew]);
+    }
 }
