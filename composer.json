@@ -10,7 +10,7 @@
     ],
     "require": {
         "ext-soap": "*",
-        "vitexsoftware/ease-framework": "dev-master"
+        "vitexsoftware/ease-core": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -19,7 +19,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Test\\Ease\\": "vendor/vitexsoftware/ease-framework/tests/src/Ease",
+            "Test\\Ease\\": "vendor/vitexsoftware/ease-core/tests/src/Ease",
             "Test\\Subreg\\": "testing/src/Subreg/",
             "Test\\": "testing/"
         }
