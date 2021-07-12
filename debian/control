@@ -8,7 +8,7 @@ Priority: optional
 Homepage: https://github.com/Spoje-NET/php-subreg
 
 Package: php-subreg
-Depends: ${misc:Depends}, ease-framework
+Depends: ${misc:Depends}, php-vitexsoftware-ease-core, php-soap
 Architecture: all
 Section: web
 Priority: optional
