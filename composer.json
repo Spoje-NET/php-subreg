@@ -1,5 +1,5 @@
 {
-    "name": "spoje.net/subreg",
+    "name": "spojenet/subreg",
     "description": "PHP Based Library for easy interaction with soap.subreg.cz",
     "license": "GPL-2.0",
     "authors": [
