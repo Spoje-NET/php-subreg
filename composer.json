@@ -1,7 +1,7 @@
 {
     "name": "spojenet/subreg",
     "description": "PHP Based Library for easy interaction with soap.subreg.cz",
-    "license": "GPL-2.0",
+    "license": "MIT",
     "authors": [
         {
             "name": "Vítězslav Dvořák",
@@ -10,7 +10,7 @@
     ],
     "require": {
         "ext-soap": "*",
-        "vitexsoftware/ease-core": "dev-master"
+        "vitexsoftware/ease-core": ">=1.12"
     },
     "autoload": {
         "psr-4": {
@@ -25,6 +25,6 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^8"
+        "phpunit/phpunit": ">=9"
     }
 }
