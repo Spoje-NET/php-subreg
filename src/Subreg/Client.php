@@ -63,7 +63,6 @@ class Client extends \Ease\Molecule
      */
     public function __construct($config)
     {
-        parent::__construct();
         $this->config = $config;
         $this->soaper = new \SoapClient(null,
             [
