@@ -13,7 +13,7 @@ namespace Subreg;
  *
  * @author Vítězslav Dvořák <info@vitexsoftware.cz>
  */
-class Client extends \Ease\Molecule
+class Client extends \Ease\Sand
 {
     /**
      * ClientLibrary version
@@ -80,11 +80,8 @@ class Client extends \Ease\Molecule
      * 
      * @return boolean was logged ?
      */
-    public function logBanner($additions = null)
-    {
-        return $this->addStatusMessage('API '.str_replace('://',
-                    '://'.$this->config['login'].'@', $this->config['uri']).' php-subreg v'.self::$libVersion.' EasePHP Framework v'.\Ease\Atom::$frameworkVersion.' '.$additions,
-                'debug');
+    public function logBanner($prefix = null, $suffix = null) {
+        return parent::logBanner( $prefix . 'API '.str_replace('://','://'.$this->config['login'].'@', $this->config['uri']).' php-subreg v'.self::$libVersion.' EasePHP Framework v'.\Ease\Atom::$frameworkVersion.' '.$additions, $suffix);
     }
 
     /**
