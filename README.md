@@ -67,20 +67,21 @@ PHP rozšíření SoapClient komunikovat se soap.subreg.cz.
 http://demoreg.net/en/settings/settings
 
 
-Docker
-------
-
-    docker pull vitexsoftware/php-subreg
-
 Debian/Ubuntu
 -------------
 
 Pro Linux jsou k dispozici .deb balíčky. Prosím použijte repo:
 
-    wget -O - http://v.s.cz/info@vitexsoftware.cz.gpg.key|sudo apt-key add -
-    echo deb http://v.s.cz/ stable main > /etc/apt/sources.list.d/ease.list
-    aptitude update
-    aptitude install php-subreg
+```shell
+sudo apt install lsb-release wget apt-transport-https bzip2
+
+sudo wget -O /usr/share/keyrings/vitexsoftware.gpg https://repo.vitexsoftware.cz/keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/vitexsoftware.gpg]  https://repo.vitexsoftware.cz  $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/vitexsoftware.list
+sudo apt update
+
+sudo apt install php-spojenet-subreg
+```
+
 
 V tomto případě je potřeba do souboru composer.json vaší aplikace přidat:
 
