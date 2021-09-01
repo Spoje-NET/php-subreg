@@ -1,4 +1,4 @@
-Source: php-subreg
+Source: php-spojenet-subreg
 Build-Depends: debhelper (>= 7.0.50~)
 Section: web
 Standards-Version: 3.9.8
@@ -7,7 +7,7 @@ Uploaders: Vitex <vitex@hippy.cz>
 Priority: optional
 Homepage: https://github.com/Spoje-NET/php-subreg
 
-Package: php-subreg
+Package: php-spojentet-subreg
 Depends: ${misc:Depends}, php-vitexsoftware-ease-core, php-soap
 Architecture: all
 Section: web

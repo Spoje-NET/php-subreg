@@ -1,7 +1,11 @@
-php-subreg (0.4) UNRELEASED; urgency=medium
+php-spojenet-subreg (1.0) UNRELEASED; urgency=medium
 
+  [ Vítězslav Dvořák ]
   * +SetAutoRenew
   * +RenewDomain
+
+  [ vitex ]
+  * 
 
  -- Vítězslav Dvořák <vitex@develoid.jinonice.czf>  Thu, 12 Sep 2019 13:34:35 +0200
 
