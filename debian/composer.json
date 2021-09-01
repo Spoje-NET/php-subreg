@@ -11,11 +11,17 @@
     "version": "0.4",
     "require": {
         "ext-soap": "*",
-        "deb/ease-framework": "*"
+        "deb/ease-core": "*"
     },
     "autoload": {
         "psr-4": {
             "Subreg\\": "."
         }
+    },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "/usr/share/php/EaseCore"
     }
+  ],
 }
