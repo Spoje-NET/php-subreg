@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for ease-core
+# postinst script for php-spojenet-subreg
 #
 # see: dh_installdeb(1)
 

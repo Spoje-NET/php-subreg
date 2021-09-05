@@ -1,7 +1,7 @@
-Ease framework Core for Debian
+Subreg PHP library debian package
 ------------------------------
     
-    Is installed by standard way in /usr/share/php/EaseCore
+    Is installed by standard way in /usr/share/php/Subreg
 
  -- Vítězslav Dvořák <vitex@hippy.cz>  Ne říj 21 15:17:56 CEST 2012
 
