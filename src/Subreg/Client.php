@@ -19,7 +19,7 @@ class Client extends \Ease\Molecule
      * ClientLibrary version
      * @var string 
      */
-    static public $libVersion = '0.3';
+    static public $libVersion = '1.0';
 
     /**
      * Object Configuration
@@ -63,7 +63,6 @@ class Client extends \Ease\Molecule
      */
     public function __construct($config)
     {
-        parent::__construct();
         $this->config = $config;
         $this->soaper = new \SoapClient(null,
             [
