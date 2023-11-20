@@ -1,9 +1,10 @@
 <?php
+
 /**
  * Subreg - Usage Example
  *
  * @author     Vítězslav Dvořák <info@vitexsoftware.cz>
- * @copyright  (C) 2018 Spoje.Net
+ * @copyright  (C) 2018,2023 Spoje.Net
  */
 
 namespace Subreg;
@@ -15,11 +16,13 @@ namespace Subreg;
  */
 class Client extends \Ease\Molecule
 {
+    use \Ease\Log\Logging;
+
     /**
      * ClientLibrary version
-     * @var string 
+     * @var string
      */
-    static public $libVersion = '1.0';
+    public static $libVersion = '1.0';
 
     /**
      * Object Configuration
@@ -35,7 +38,7 @@ class Client extends \Ease\Molecule
 
     /**
      * Authentification
-     * @var string 
+     * @var string
      */
     public $token = null;
 
@@ -47,24 +50,25 @@ class Client extends \Ease\Molecule
 
     /**
      * Last call error Data
-     * @var array 
+     * @var array
      */
     public $lastError = [];
 
     /**
      * Last call obtained Data
-     * @var array 
+     * @var array
      */
     public $lastResult = [];
 
     /**
-     * 
+     *
      * @param type $config
      */
     public function __construct($config)
     {
         $this->config = $config;
-        $this->soaper = new \SoapClient(null,
+        $this->soaper = new \SoapClient(
+            null,
             [
             "location" => $config['location'],
             "uri" => $config['uri']
@@ -77,22 +81,27 @@ class Client extends \Ease\Molecule
      * Add Info about used user, server and libraries
      *
      * @param string $additions Additional note text
-     * 
+     *
      * @return boolean was logged ?
      */
     public function logBanner($additions = null)
     {
-        return $this->addStatusMessage('API '.str_replace('://',
-                '://'.$this->config['login'].'@', $this->config['uri']).' php-subreg v'.self::$libVersion.' EasePHP Framework v'.\Ease\Atom::$frameworkVersion.' '.$additions,
-            'debug');
+        return $this->addStatusMessage(
+            'API ' . str_replace(
+                '://',
+                '://' . $this->config['login'] . '@',
+                $this->config['uri']
+            ) . ' php-subreg v' . self::$libVersion . ' EasePHP Framework v' . \Ease\Atom::$frameworkVersion . ' ' . $additions,
+            'debug'
+        );
     }
 
     /**
      * API Call
-     * 
+     *
      * @param string $command command to execute
      * @param array  $params  command parameters
-     * 
+     *
      * @return array
      */
     public function call($command, $params = [])
@@ -128,19 +137,21 @@ class Client extends \Ease\Molecule
 
     /**
      * log Error
-     * 
+     *
      * @param array $errorData
      */
     public function logError($errorData)
     {
         $this->lastError = $errorData;
-        $this->addStatusMessage($errorData['errorcode']['major'].' '.$errorData['errorcode']['minor'].': '.$errorData['errormsg'],
-            'error');
+        $this->addStatusMessage(
+            $errorData['errorcode']['major'] . ' ' . $errorData['errorcode']['minor'] . ': ' . $errorData['errormsg'],
+            'error'
+        );
     }
 
     /**
      * Perform Login to Server
-     * 
+     *
      * @return boolean success
      */
     public function login()
@@ -160,11 +171,11 @@ class Client extends \Ease\Molecule
 
     /**
      *  Check if domain is available or not
-     * 
+     *
      * @link https://subreg.cz/manual/?cmd=Check_Domain Command: Check_Domain
-     * 
+     *
      * @param string $domain
-     * 
+     *
      * @return array
      */
     public function checkDomain($domain)
@@ -174,9 +185,9 @@ class Client extends \Ease\Molecule
 
     /**
      * Create a new domain
-     * 
+     *
      * @link https://subreg.cz/manual/?cmd=Create_Domain Order: Create_Domain
-     * 
+     *
      * @param string $domain
      * @param string $registrantID
      * @param string $contactsAdminID
@@ -184,14 +195,20 @@ class Client extends \Ease\Molecule
      * @param string $authID
      * @param array  $nsHosts          Hostnames of nameservers: ['ns.domain.cz','ns2.domain.cz']
      * @param string $nsset            Nameserver Set (only for FRED registries (.CZ,.EE,...))
-     * @param int    $period            
-     * 
+     * @param int    $period
+     *
      * @return array
      */
-    public function registerDomain($domain, $registrantID, $contactsAdminID,
-                                   $contactsTechID, $authID, $nsHosts = [],
-                                   $nsset = null, $period = 1)
-    {
+    public function registerDomain(
+        $domain,
+        $registrantID,
+        $contactsAdminID,
+        $contactsTechID,
+        $authID,
+        $nsHosts = [],
+        $nsset = null,
+        $period = 1
+    ) {
 
         foreach ($nsHosts as $host) {
             $ns[]["hostname"] = $host;
@@ -231,9 +248,9 @@ class Client extends \Ease\Molecule
 
     /**
      *  Get all domains from your account
-     * 
+     *
      * @link https://subreg.cz/manual/?cmd=Domains_List Command: Domains_List
-     * 
+     *
      * @return array
      */
     public function domainsList()
@@ -243,43 +260,41 @@ class Client extends \Ease\Molecule
 
     /**
      *  Get pricelist from your account
-     * 
+     *
      * @link https://subreg.cz/manual/?cmd=Pricelist Command: Pricelist
-     * 
+     *
      * @return array
      */
     public function pricelist()
     {
         return $this->call('Pricelist');
     }
-    
+
     /**
      *  Get specified pricelist from your account
-     * 
+     *
      * @link https://subreg.cz/manual/?cmd=Get_Pricelist Command: Get_Pricelist
-     * 
+     *
      * @param string requested pricelist name
-     * 
+     *
      * @return array
      */
     public function getPricelist($pricelist)
     {
-        return $this->call('Get_Pricelist', ['pricelist'=>$pricelist]);
+        return $this->call('Get_Pricelist', ['pricelist' => $pricelist]);
     }
-    
+
     /**
-     * 
+     *
      * @link https://subreg.cz/manual/?cmd=Renew_Domain Command: Renew_Domain
-     * 
+     *
      * @param string $domain name
      * @param int $years
-     * 
+     *
      * @return type
      */
     public function renewDomain(string $domain, int $years = 1)
     {
-        return $this->call('Make_Order', ['order' => ['domain' => $domain, 'params' => ['period' => $years], 'type' => 'Renew_Domain']] );
+        return $this->call('Make_Order', ['order' => ['domain' => $domain, 'params' => ['period' => $years], 'type' => 'Renew_Domain']]);
     }
-    
-    
 }
