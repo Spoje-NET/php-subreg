@@ -16,7 +16,7 @@ namespace Subreg;
  */
 class Client extends \Ease\Molecule
 {
-    use \Ease\Log\Logging;
+    use \Ease\Logger\Logging;
 
     /**
      * ClientLibrary version
