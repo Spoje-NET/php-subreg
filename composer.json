@@ -10,8 +10,7 @@
     ],
     "require": {
         "ext-soap": "*",
-        "vitexsoftware/ease-core": ">=1.41",
-        "spojenet/subreg": "dev-master"
+        "vitexsoftware/ease-core": ">=1.41"
     },
     "autoload": {
         "psr-4": {
