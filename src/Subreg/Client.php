@@ -75,6 +75,7 @@ class Client extends \Ease\Molecule
             ]
         );
         $this->login();
+        $this->setObjectName();
     }
 
     /**
