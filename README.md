@@ -6,12 +6,11 @@
 
 CZ: PHP Knihovna pro snadnou práci s API [Subreg.cz](https://subreg.cz/manual/)
 
-[![Source Code](http://img.shields.io/badge/source/Spoje-NET/php-subreg-blue.svg?style=flat-square)](https://github.com/Spoje-NET/php-subreg)
+[![View php-subreg on GitHub](https://img.shields.io/github/stars/Spoje-NET/php-subreg?color=232323&label=php-subreg&logo=github&labelColor=232323)](https://github.com/Spoje-NET/php-subreg) 
+[![Author Spoje-NET](https://img.shields.io/badge/Spoje-NET-b820f9?labelColor=b820f9&logo=githubsponsors&logoColor=fff)](https://github.com/Spoje-NET) ![Written in PHP](https://img.shields.io/static/v1?label=&message=PHP&color=777BB4&logo=php&logoColor=FFFFFF)
+
 [![Latest Version](https://img.shields.io/github/release/Spoje-NET/php-subreg.svg?style=flat-square)](https://github.com/Spoje-NET/php-subreg/releases)
 [![Software License](https://img.shields.io/badge/license-GNU-brightgreen.svg?style=flat-square)](https://github.com/Spoje-NET/php-subreg/blob/master/LICENSE)
-[![Build Status](https://img.shields.io/travis/Spoje-NET/php-subreg/master.svg?style=flat-square)](https://travis-ci.org/Spoje-NET/php-subreg)
-[![Code Coverage](https://scrutinizer-ci.com/g/Spoje-NET/php-subreg/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Spoje-NET/php-subreg/?branch=master)
-[![Docker pulls](https://img.shields.io/docker/pulls/vitexsoftware/php-subreg.svg)](https://hub.docker.com/r/vitexsoftware/php-subreg/)
 [![Total Downloads](https://img.shields.io/packagist/dt/spoje.net/php-subreg.svg?style=flat-square)](https://packagist.org/packages/spoje.net/php-subreg)
 [![Latest stable](https://img.shields.io/packagist/v/spoje.net/php-subreg.svg?style=flat-square)](https://packagist.org/packages/spoje.net/php-subreg)
 
