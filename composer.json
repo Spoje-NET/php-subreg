@@ -11,7 +11,7 @@
     "require": {
         "ext-soap": "*",
         "vitexsoftware/ease-core": ">=1.41",
-        "spoje.net/subreg": "dev-master"
+        "spojenet/subreg": "dev-master"
     },
     "autoload": {
         "psr-4": {
