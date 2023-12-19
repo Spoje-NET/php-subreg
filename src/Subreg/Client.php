@@ -44,25 +44,26 @@ class Client extends \Ease\Molecule
 
     /**
      * Last call status code
-     * @var string ok|error
+     * @var string|null ok|error
      */
     public $lastStatus = null;
 
     /**
      * Last call error Data
-     * @var array
+     * @var array|null
      */
     public $lastError = [];
 
     /**
      * Last call obtained Data
-     * @var array
+     * @var array|null
      */
     public $lastResult = [];
 
     /**
-     *
-     * @param type $config
+     * SubReg Client
+     *      *
+     * @param array $config
      */
     public function __construct($config)
     {
@@ -72,9 +73,8 @@ class Client extends \Ease\Molecule
             [
             "location" => $config['location'],
             "uri" => $config['uri']
-            ]
+                ]
         );
-        $this->login();
         $this->setObjectName();
     }
 
@@ -107,14 +107,13 @@ class Client extends \Ease\Molecule
      */
     public function call($command, $params = [])
     {
-        $this->lastError  = null;
+        $this->lastError = null;
         $this->lastStatus = null;
         $this->lastResult = null;
         if ($this->token && !array_key_exists('ssid', $params)) {
             $params['ssid'] = $this->token;
         }
         $responseRaw = $this->soaper->__call($command, ['data' => $params]);
-
 
         if (isset($responseRaw['status'])) {
             $this->lastStatus = $responseRaw['status'];
@@ -157,15 +156,16 @@ class Client extends \Ease\Molecule
      */
     public function login()
     {
-        $result        = false;
-        $params        = [
+        $result = false;
+        $params = [
             "login" => $this->config['login'],
             "password" => $this->config['password']
         ];
         $loginResponse = $this->call("Login", $params);
         if (array_key_exists('ssid', $loginResponse)) {
             $this->token = $loginResponse['ssid'];
-            $result      = true;
+            $result = true;
+            $this->setObjectName($params['login'] . '@' . $this->getObjectName());
         }
         return $result;
     }
@@ -231,7 +231,7 @@ class Client extends \Ease\Molecule
                     ),
                 ),
                 "ns" => array(
-                    "hosts" => $ns,
+                    "hosts" => $nsHosts,
                 ),
                 "params" => array(
                     "authid" => $authID,
@@ -276,7 +276,7 @@ class Client extends \Ease\Molecule
      *
      * @link https://subreg.cz/manual/?cmd=Get_Pricelist Command: Get_Pricelist
      *
-     * @param string requested pricelist name
+     * @param string $pricelist requested pricelist name
      *
      * @return array
      */
@@ -292,7 +292,7 @@ class Client extends \Ease\Molecule
      * @param string $domain name
      * @param int $years
      *
-     * @return type
+     * @return array
      */
     public function renewDomain(string $domain, int $years = 1)
     {
