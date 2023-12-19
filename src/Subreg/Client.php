@@ -92,7 +92,7 @@ class Client extends \Ease\Molecule
                 '://',
                 '://' . $this->config['login'] . '@',
                 $this->config['uri']
-            ) . ' php-subreg v' . self::$libVersion . ' EasePHP Framework v' . \Ease\Atom::$frameworkVersion . ' ' . $additions,
+            ) . ' php-subreg v' . self::$libVersion . ' ' . $additions,
             'debug'
         );
     }
