@@ -15,7 +15,7 @@ require_once '../vendor/autoload.php';
 $client = new Client(\Ease\Shared::instanced()->configuration);
 
 
-$unexistentDomain = strtolower(\Ease\Sand::randomString()).'.cz';
+$unexistentDomain = strtolower(\Ease\Functions::randomString()).'.cz';
 
 $response = $client->checkDomain($unexistentDomain);
 
