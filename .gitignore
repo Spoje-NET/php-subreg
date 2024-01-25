@@ -7,3 +7,5 @@
 /debian/debhelper-build-stamp
 /tests/.phpunit.result.cache
 /.phpunit.result.cache
+/.phpunit.cache/
+/nbproject/

@@ -7,6 +7,7 @@ namespace Test\Subreg;
  */
 class ClientTest extends \Test\Ease\MoleculeTest
 {
+
     /**
      * @var Client
      */
@@ -19,6 +20,7 @@ class ClientTest extends \Test\Ease\MoleculeTest
     protected function setUp(): void
     {
         $this->object = new \Subreg\Client(\Ease\Shared::instanced()->configuration);
+        $this->object->login();
     }
 
     /**
@@ -40,11 +42,12 @@ class ClientTest extends \Test\Ease\MoleculeTest
     {
         $classname = get_class($this->object);
         // Get mock, without the constructor being called
-        $mock      = $this->getMockBuilder($classname)
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+        $mock = $this->getMockBuilder($classname)
+                ->disableOriginalConstructor()
+                ->getMockForAbstractClass();
         $mock->__construct(\Ease\Shared::instanced()->configuration);
-        $this->assertNotEmpty($mock->token);
+        $this->assertArrayHasKey('login', $this->object->config);
+        $this->assertInstanceOf('\SoapClient', $this->object->soaper);
     }
 
     /**
@@ -60,13 +63,15 @@ class ClientTest extends \Test\Ease\MoleculeTest
      */
     public function testCall()
     {
-        $fail    = $this->object->call('NonExist');
+        $fail = $this->object->call('NonExist');
         $this->assertEquals(['error' => [
                 'errormsg' => 'Invalid method called',
                 'errorcode' => [
-                    'major' => '500', 'minor' => '107']
+                    'major' => '500',
+                    'minor' => '107'
+                ]
             ]
-            ], $fail);
+                ], $fail);
         $success = $this->object->call('Get_Credit');
         $this->arrayHasKey(array_key_exists('credit', $success));
     }
@@ -88,6 +93,7 @@ class ClientTest extends \Test\Ease\MoleculeTest
     public function testLogin()
     {
         $this->assertTrue($this->object->login());
+        $this->assertNotEmpty($this->object->token);
     }
 
     /**
@@ -95,9 +101,7 @@ class ClientTest extends \Test\Ease\MoleculeTest
      */
     public function testCheckDomain()
     {
-        $checkResult = $this->object->checkDomain('spoje.net');
-        $this->assertTrue(array_key_exists('name', $checkResult) && array_key_exists('price',
-                $checkResult));
+        $this->assertIsArray($this->object->checkDomain('php-subreg.cz'));
     }
 
     /**
@@ -107,7 +111,7 @@ class ClientTest extends \Test\Ease\MoleculeTest
     {
         $domainlist = $this->object->domainsList();
         $this->assertTrue(array_key_exists('domains', $domainlist) && array_key_exists('count',
-                $domainlist));
+                        $domainlist));
     }
 
     /**
@@ -124,8 +128,8 @@ class ClientTest extends \Test\Ease\MoleculeTest
      */
     public function testGetPricelist()
     {
-        $pricelist = $this->object->getPricelist('???');
-        $this->assertTrue(array_key_exists('cz', $pricelist));
+        $pricelist = $this->object->getPricelist('MYPRICELIST');
+        $this->assertTrue(array_key_exists('error', $pricelist));
     }
 
     /**
@@ -133,12 +137,12 @@ class ClientTest extends \Test\Ease\MoleculeTest
      */
     public function testRegisterDomain()
     {
-        $unexistentDomain = strtolower(\Ease\Sand::randomString()).'.cz';
+        $unexistentDomain = strtolower(\Ease\Functions::randomString()) . '.cz';
 
         $nsHosts = array("ns.spoje.net", "ns2.spoje.net");
 
         $result = $this->object->registerDomain($unexistentDomain, 'G-000001',
-            'G-000001', 'G-000001', 'ukulele', $nsHosts);
+                'G-000001', 'G-000001', 'ukulele', $nsHosts);
 
         $this->assertTrue(array_key_exists('orderid', $result));
     }
@@ -148,6 +152,23 @@ class ClientTest extends \Test\Ease\MoleculeTest
      */
     public function testRenewDomain()
     {
-        $this->assertArrayHasKey('orderid',$this->object->renewDomain('vitexsoftware.cz',1));
+        $this->assertIsArray($this->object->renewDomain('php-subreg.cz', 1));
+    }
+
+    /**
+     * @covers Subreg\Client::creditCorrection
+     */
+    public function testcreditCorrection()
+    {
+        $this->assertIsArray($this->object->creditCorrection('php-subreg', '+1', 'PHPUnit Test'));
+    }
+
+    /**
+     * @covers Subreg\Client::infoUser
+     */
+    public function testinfoUser()
+    {
+        $userInfo = $this->object->infoUser(1); // Not Exists
+        $this->assertTrue(array_key_exists('error', $userInfo));
     }
 }

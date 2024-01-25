@@ -4,7 +4,7 @@
  * Subreg - Usage Example
  *
  * @author     Vítězslav Dvořák <info@vitexsoftware.cz>
- * @copyright  (C) 2018,2023 Spoje.Net
+ * @copyright  (C) 2018,2023-2024 Spoje.Net
  */
 
 namespace Subreg;
@@ -44,7 +44,7 @@ class Client extends \Ease\Molecule
 
     /**
      * Last call status code
-     * @var string|null ok|error
+     * @var array|string|null ok|error
      */
     public $lastStatus = null;
 
@@ -83,7 +83,7 @@ class Client extends \Ease\Molecule
      *
      * @param string $additions Additional note text
      *
-     * @return boolean was logged ?
+     * @return bool was logged ?
      */
     public function logBanner($additions = null)
     {
@@ -152,7 +152,7 @@ class Client extends \Ease\Molecule
     /**
      * Perform Login to Server
      *
-     * @return boolean success
+     * @return bool success
      */
     public function login()
     {
@@ -297,5 +297,37 @@ class Client extends \Ease\Molecule
     public function renewDomain(string $domain, int $years = 1)
     {
         return $this->call('Make_Order', ['order' => ['domain' => $domain, 'params' => ['period' => $years], 'type' => 'Renew_Domain']]);
+    }
+
+    /**
+     * Credit_Correction
+     *
+     * Correct credit amount of your sub-users. The amount you specify in this
+     * command will be added to current amount. Use negative values for
+     * subtracting credit. Please note that currency will depend on current
+     * user setting.
+     *
+     * @see https://subreg.cz/manual/?cmd=Credit_Correction
+     *
+     * @param string $username  Credit Holder Username
+     * @param int    $amount    10 or -2
+     * @param string $reason    For example "Invoice settle"
+     */
+    public function creditCorrection($username, $amount, $reason)
+    {
+        return $this->call(
+            'Credit_Correction',
+            ['username' => $username, 'amount' => strval($amount), 'reason' => $reason]
+        );
+    }
+
+    /**
+     * Retrieve single sub-user
+     *
+     * @param int $id ID of the user
+     */
+    public function infoUser(int $id)
+    {
+        return $this->call('Info_User', ['id' => $id]);
     }
 }
