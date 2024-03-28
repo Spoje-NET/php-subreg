@@ -191,7 +191,7 @@ class Client extends \Ease\Sand
     {
 
         foreach ($nsHosts as $host) {
-            $ns[]["hostname"] = $host;
+            $nameservers[]["hostname"] = $host;
         }
 
         $order = array(
@@ -210,7 +210,7 @@ class Client extends \Ease\Sand
                     ),
                 ),
                 "ns" => array(
-                    "hosts" => $ns,
+                    "hosts" => $nameservers,
                 ),
                 "params" => array(
                     "authid" => $authID,
