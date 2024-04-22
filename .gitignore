@@ -9,3 +9,4 @@
 /.phpunit.result.cache
 /.phpunit.cache/
 /nbproject/
+/.env

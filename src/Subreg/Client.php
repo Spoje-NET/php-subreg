@@ -79,6 +79,31 @@ class Client extends \Ease\Molecule
     }
 
     /**
+     * Convert ENV keys to configuration
+     *
+     * @param array $env
+     *
+     * @return array
+     */
+    public static function env2conf(array $env)
+    {
+        $conf = [];
+        if (array_key_exists('SUBREG_LOCATION', $env)) {
+            $conf['location'] = $env['SUBREG_LOCATION'];
+        }
+        if (array_key_exists('SUBREG_URI', $env)) {
+            $conf['uri'] = $env['SUBREG_URI'];
+        }
+        if (array_key_exists('SUBREG_LOGIN', $env)) {
+            $conf['login'] = $env['SUBREG_LOGIN'];
+        }
+        if (array_key_exists('SUBREG_PASSWORD', $env)) {
+            $conf['password'] = $env['SUBREG_PASSWORD'];
+        }
+        return $conf;
+    }
+
+    /**
      * Add Info about used user, server and libraries
      *
      * @param string $additions Additional note text
@@ -329,5 +354,60 @@ class Client extends \Ease\Molecule
     public function infoUser(int $id)
     {
         return $this->call('Info_User', ['id' => $id]);
+    }
+
+    /**
+     * List of DNS records for specified domain.
+     *
+     * @see https://subreg.cz/manual/?cmd=Get_DNS_Zone
+     *
+     * @param string $zoneName  Registered domain
+     *
+     * @return array
+     */
+    public function getDnsZone(string $zoneName)
+    {
+        return $this->call('Get_DNS_Zone', ['domain' => $zoneName]);
+    }
+
+    /**
+     * Create a new order (CreateDomain, ModifyDomain, RenewDomain, ... )
+     *
+     * @see https://subreg.cz/manual/?cmd=Make_Order
+     *
+     *   Create_Domain
+     *   PremiumCreate_Domain
+     *   Transfer_Domain
+     *   PremiumTransfer_Domain
+     *   AccountTransfer_Domain
+     *   TransferApprove_Domain
+     *   TransferDeny_Domain
+     *   TransferCancel_Domain
+     *   SKChangeOwner_Domain
+     *   Modify_Domain
+     *   ModifyNS_Domain
+     *   Delete_Domain
+     *   Restore_Domain
+     *   PremiumRestore_Domain
+     *   Renew_Domain
+     *   PremiumRenew_Domain
+     *   Backorder_Domain
+     *   Preregister_Domain
+     *   Create_Object
+     *   Transfer_Object
+     *   Update_Object
+     *   TransferRU_Request
+     *
+     *   Certificate_Request
+     *
+     * @param string $domain
+     * @param string $type
+     * @param array $data
+     *
+     * @return array
+     */
+    public function makeOrder(string $domain, string $type, array $data = [])
+    {
+        return $this->call('Make_Order', ['domain' => $zoneName, 'type' => $type, 'params' => $data]);
     }
 }

@@ -1,8 +1,9 @@
-php-spojenet-subreg (1.1.0) UNRELEASED; urgency=medium
+php-spojenet-subreg (1.1.0) unstable; urgency=medium
 
+  [ vitex ]
   * creditCorrection and infoUser functions added
 
- -- vitex <info@vitexsoftware.cz>  Thu, 25 Jan 2024 20:24:48 +0100
+ --  <vitezslav.dvorak@spojenet.cz>  Mon, 22 Apr 2024 17:17:07 +0200
 
 php-spojenet-subreg (1.0) unstable; urgency=medium
 
