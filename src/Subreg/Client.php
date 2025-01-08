@@ -27,7 +27,7 @@ class Client extends \Ease\Molecule
     /**
      * ClientLibrary version.
      */
-    public static string $libVersion = '1.0';
+    public static string $libVersion = '1.2.0';
 
     /**
      * Object Configuration.
@@ -42,7 +42,7 @@ class Client extends \Ease\Molecule
     /**
      * Authentification.
      */
-    public string $token = null;
+    public string $token = '';
 
     /**
      * Last call status code.
@@ -63,10 +63,10 @@ class Client extends \Ease\Molecule
 
     /**
      * SubReg Client.
-     *      *
-     * @param array $config
+     *      
+     * @param array<string,string> $config
      */
-    public function __construct($config)
+    public function __construct(array $config)
     {
         $this->config = $config;
         $this->soaper = new \SoapClient(
@@ -77,14 +77,17 @@ class Client extends \Ease\Molecule
             ],
         );
         $this->setObjectName();
+        $this->login();
     }
 
     /**
      * Convert ENV keys to configuration.
      *
-     * @return array
+     * @param array<string,string> $env Env Data
+     * 
+     * @return array<string,string>
      */
-    public static function env2conf(array $env)
+    public static function env2conf(array $env): array
     {
         $conf = [];
 
@@ -408,6 +411,6 @@ class Client extends \Ease\Molecule
      */
     public function makeOrder(string $domain, string $type, array $data = [])
     {
-        return $this->call('Make_Order', ['domain' => $zoneName, 'type' => $type, 'params' => $data]);
+        return $this->call('Make_Order', ['domain' => $domain, 'type' => $type, 'params' => $data]);
     }
 }

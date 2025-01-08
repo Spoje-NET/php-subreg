@@ -29,3 +29,39 @@ $existingDomain = 'spoje.net';
 
 $response = $client->checkDomain($existingDomain);
 var_dump($response);
+
+/** 
+ array(5) {
+  'name' =>
+  string(9) "spoje.net"
+  'avail' =>
+  int(0)
+  'price' =>
+  array(3) {
+    'amount' =>
+    string(6) "291.32"
+    'premium' =>
+    int(0)
+    'currency' =>
+    string(3) "CZK"
+  }
+  'price_renew' =>
+  array(3) {
+    'amount' =>
+    string(6) "291.32"
+    'premium' =>
+    int(0)
+    'currency' =>
+    string(3) "CZK"
+  }
+  'price_transfer' =>
+  array(3) {
+    'amount' =>
+    string(6) "291.32"
+    'premium' =>
+    int(0)
+    'currency' =>
+    string(3) "CZK"
+  }
+}
+ */
