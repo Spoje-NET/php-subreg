@@ -19,7 +19,7 @@ require_once '../vendor/autoload.php';
 
 \Ease\Shared::init(['SUBREG_LOCATION', 'SUBREG_URI', 'SUBREG_LOGIN', 'SUBREG_PASSWORD'], '../.env');
 
-$client = new Client(Client::env2conf(\Ease\Shared::instanced()->configuration));
+$client = new Client();
 
 $unexistentDomain = strtolower(\Ease\Functions::randomString()).'.cz';
 
@@ -30,38 +30,38 @@ $existingDomain = 'spoje.net';
 $response = $client->checkDomain($existingDomain);
 var_dump($response);
 
-/** 
- array(5) {
-  'name' =>
-  string(9) "spoje.net"
-  'avail' =>
-  int(0)
-  'price' =>
-  array(3) {
-    'amount' =>
-    string(6) "291.32"
-    'premium' =>
-    int(0)
-    'currency' =>
-    string(3) "CZK"
-  }
-  'price_renew' =>
-  array(3) {
-    'amount' =>
-    string(6) "291.32"
-    'premium' =>
-    int(0)
-    'currency' =>
-    string(3) "CZK"
-  }
-  'price_transfer' =>
-  array(3) {
-    'amount' =>
-    string(6) "291.32"
-    'premium' =>
-    int(0)
-    'currency' =>
-    string(3) "CZK"
-  }
-}
+/**
+ * array(5) {
+ * 'name' =>
+ * string(9) "spoje.net"
+ * 'avail' =>
+ * int(0)
+ * 'price' =>
+ * array(3) {
+ * 'amount' =>
+ * string(6) "291.32"
+ * 'premium' =>
+ * int(0)
+ * 'currency' =>
+ * string(3) "CZK"
+ * }
+ * 'price_renew' =>
+ * array(3) {
+ * 'amount' =>
+ * string(6) "291.32"
+ * 'premium' =>
+ * int(0)
+ * 'currency' =>
+ * string(3) "CZK"
+ * }
+ * 'price_transfer' =>
+ * array(3) {
+ * 'amount' =>
+ * string(6) "291.32"
+ * 'premium' =>
+ * int(0)
+ * 'currency' =>
+ * string(3) "CZK"
+ * }
+ * }.
  */

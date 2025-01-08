@@ -19,7 +19,7 @@ require_once '../vendor/autoload.php';
 
 \Ease\Shared::init(['SUBREG_LOCATION', 'SUBREG_URI', 'SUBREG_LOGIN', 'SUBREG_PASSWORD'], '../.env');
 
-$client = new Client(Client::env2conf(\Ease\Shared::instanced()->configuration));
+$client = new Client();
 
 $unexistentDomain = strtolower(\Ease\Sand::randomString()).'.cz';
 

@@ -63,17 +63,17 @@ class Client extends \Ease\Molecule
 
     /**
      * SubReg Client.
-     *      
-     * @param array<string,string> $config
+     *
+     * @param array<string, string> $config
      */
-    public function __construct(array $config)
+    public function __construct(array $config = [])
     {
-        $this->config = $config;
+        $this->config = $config ? self::env2conf(\Ease\Shared::instanced()->configuration) : $config;
         $this->soaper = new \SoapClient(
             null,
             [
-                'location' => $config['location'],
-                'uri' => $config['uri'],
+                'location' => $this->config['location'],
+                'uri' => $this->config['uri'],
             ],
         );
         $this->setObjectName();
@@ -83,9 +83,9 @@ class Client extends \Ease\Molecule
     /**
      * Convert ENV keys to configuration.
      *
-     * @param array<string,string> $env Env Data
-     * 
-     * @return array<string,string>
+     * @param array<string, string> $env Env Data
+     *
+     * @return array<string, string>
      */
     public static function env2conf(array $env): array
     {

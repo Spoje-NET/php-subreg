@@ -24,7 +24,7 @@ require_once '../vendor/autoload.php';
     'SUBREG_PASSWORD',
 ], '../.env');
 
-$client = new Client(Client::env2conf(\Ease\Shared::instanced()->configuration));
+$client = new Client();
 $client->login();
 
 $response = $client->getDnsZone('vitexsoftware.com');

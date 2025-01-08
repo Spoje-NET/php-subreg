@@ -33,11 +33,12 @@ Konfigurace
 
 Konfigurace se provádí nastavením následujících konstant:
 
-```php
-/**
- * Write logs as:
- */
-define('LOG_TYPE', 'syslog');
+```env
+EASE_LOGGER=syslog|console
+SUBREG_LOCATION=https://soap.subreg.cz/cmd.php
+SUBREG_URI=https://soap.subreg.cz/soap
+SUBREG_LOGIN=spojenetapi#spoje.net
+SUBREG_PASSWORD=KfbBPb?Uk6Q@%uca
 
 ```
 
