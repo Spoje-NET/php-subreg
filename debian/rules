@@ -8,5 +8,4 @@ override_dh_auto_test:
 
 override_dh_install:
 	dh_install
-	./debian/fixversion.sh
-
+	jq '.version = "'`dpkg-parsechangelog | sed -n 's/^Version: //p'| sed 's/~.*//'`'"'  debian/composer.json |sponge debian/php-spojenet-subreg/usr/share/php/Subreg/composer.json

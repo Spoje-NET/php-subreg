@@ -10,3 +10,8 @@
 /.phpunit.cache/
 /nbproject/
 /.env
+/.build/
+/debian/.debhelper/
+/debian/php-spojenet-subreg.debhelper.log
+/debian/php-spojenet-subreg.substvars
+/debian/php-spojenet-subreg/

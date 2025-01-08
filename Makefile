@@ -1,59 +1,25 @@
-repoversion=$(shell LANG=C aptitude show php-subreg | grep Version: | awk '{print $$2}')
-nextversion=$(shell echo $(repoversion) | perl -ne 'chomp; print join(".", splice(@{[split/\./,$$_]}, 0, -1), map {++$$_} pop @{[split/\./,$$_]}), "\n";')
+# vim: set tabstop=8 softtabstop=8 noexpandtab:
+.PHONY: help
+help: ## Displays this list of targets with descriptions
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}'
 
+.PHONY: static-code-analysis
+static-code-analysis: vendor ## Runs a static code analysis with phpstan/phpstan
+	vendor/bin/phpstan analyse --configuration=phpstan-default.neon.dist --memory-limit=-1
 
-all: build install
+.PHONY: static-code-analysis-baseline
+static-code-analysis-baseline: check-symfony vendor ## Generates a baseline for static code analysis with phpstan/phpstan
+	vendor/bin/phpstan analyze --configuration=phpstan-default.neon.dist --generate-baseline=phpstan-default-baseline.neon --memory-limit=-1
 
-fresh:
-	git pull
+.PHONY: tests
+tests: vendor
+	vendor/bin/phpunit tests
+
+.PHONY: vendor
+vendor: composer.json composer.lock ## Installs composer dependencies
 	composer install
-build:
-	echo build
 
+.PHONY: cs
+cs: ## Update Coding Standards
+	vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --diff --verbose
 
-clean:
-	rm -rf debian/php-subreg
-	rm -rf debian/subreg .phpunit.result.cache debian/subreg.debhelper.log
-	rm -rf debian/subreg-doc
-	rm -rf debian/*.log
-	rm -rf debian/*.substvars
-	rm -rf docs/*
-	rm -f  debianTest/composer.lock
-	rm -rf vendor/* composer.lock
-
-apigen:
-	VERSION=`cat debian/composer.json | grep version | awk -F'"' '{print $4}'`; \
-	apigen generate --source src --destination docs --title "subreg ${VERSION}" --charset UTF-8 --access-levels public --access-levels protected --php --tree
-
-test: pretest phpunit
-
-pretest:
-	composer --ansi --no-interaction update
-
-phpunit: pretest
-	vendor/bin/phpunit --bootstrap tests/bootstrap.php
-
-deb:
-	dpkg-buildpackage -A -us -uc
-
-rpm:
-	rpmdev-bumpspec --comment="Build" --userstring="Vítězslav Dvořák <info@vitexsoftware.cz>" subreg.spec
-	rpmbuild -ba subreg.spec 
-
-verup:
-	git commit debian/composer.json debian/version debian/revision  -m "`cat debian/version`-`cat debian/revision`"
-	git push origin master
-
-dimage:
-	docker build -t vitexsoftware/subreg .
-
-release:
-	echo Release v$(nextversion)
-	dch -v $(nextversion) `git log -1 --pretty=%B | head -n 1`
-	debuild -i -us -uc -b
-	git commit -a -m "Release v$(nextversion)"
-	git tag -a $(nextversion) -m "version $(nextversion)"
-
-
-.PHONY : install
-	

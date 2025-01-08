@@ -1,6 +1,6 @@
 
 # Php-subreg
-![Php-subreg Logo](https://github.com/Spoje-NET/php-subreg/raw/master/php-subreg-logo.png "Project Logo")
+![Php-subreg Logo](php-subreg-logo.png?raw=true "Project Logo")
 
 
 
@@ -64,28 +64,27 @@ PHP rozšíření SoapClient komunikovat se soap.subreg.cz.
 
 http://demoreg.net/en/settings/settings
 
-
-Docker
-------
-
-    docker pull vitexsoftware/php-subreg
-
 Debian/Ubuntu
 -------------
 
 Pro Linux jsou k dispozici .deb balíčky. Prosím použijte repo:
 
-    wget -O - http://v.s.cz/info@vitexsoftware.cz.gpg.key|sudo apt-key add -
-    echo deb http://v.s.cz/ stable main > /etc/apt/sources.list.d/ease.list
-    aptitude update
-    aptitude install php-subreg
+```
+sudo apt install lsb-release wget apt-transport-https bzip2
+
+wget -qO- https://repo.vitexsoftware.com/keyring.gpg | sudo tee /etc/apt/trusted.gpg.d/vitexsoftware.gpg
+echo "deb [signed-by=/etc/apt/trusted.gpg.d/vitexsoftware.gpg]  https://repo.vitexsoftware.com  $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/vitexsoftware.list
+sudo apt update
+sudo apt install php-spojenet-subreg
+```
+
 
 V tomto případě je potřeba do souboru composer.json vaší aplikace přidat:
 
 ```json
     "require": {
         "php-subreg": "*",
-        "ease-framework": "*"
+        "ease-core": "*"
     },
     "repositories": [
         {
@@ -109,20 +108,11 @@ Takže při instalaci závislostí bude vypadat nějak takto:
 
     Loading composer repositories with package information
     Installing dependencies from lock file
-      - Installing ease-framework (1.1.3.3)
+      - Installing ease-core (1.1.3.3)
         Symlinked from /usr/share/php/Ease
 
       - Installing php-subreg (0.2.1)
         Symlinked from /usr/share/php/Subreg
 
 A aktualizaci bude možné dělat globálně pro celý systém prostřednictvím apt-get.
-
-Sestavení
----------
-
-Debianí balíček vytvoříme spuštěním debian/deb-package.sh
-
-Obraz pro Docker:
-
-    docker build -t vitexsoftware/php-subreg
 

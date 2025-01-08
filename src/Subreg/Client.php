@@ -1,16 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 /**
- * Subreg - Usage Example
+ * This file is part of the PHPSubreg package
  *
- * @author     Vítězslav Dvořák <info@vitexsoftware.cz>
- * @copyright  (C) 2018,2023-2024 Spoje.Net
+ * https://github.com/Spoje-NET/php-subreg
+ *
+ * (c) Vítězslav Dvořák <http://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Subreg;
 
 /**
- * Basic Soap Client class
+ * Basic Soap Client class.
  *
  * @author Vítězslav Dvořák <info@vitexsoftware.cz>
  */
@@ -19,49 +25,44 @@ class Client extends \Ease\Molecule
     use \Ease\Logger\Logging;
 
     /**
-     * ClientLibrary version
-     * @var string
+     * ClientLibrary version.
      */
-    public static $libVersion = '1.0';
+    public static string $libVersion = '1.0';
 
     /**
-     * Object Configuration
-     * @var array
+     * Object Configuration.
      */
-    public $config = [];
+    public array $config = [];
 
     /**
-     * Soap Helper
-     * @var \SoapClient
+     * Soap Helper.
      */
-    public $soaper = null;
+    public \SoapClient $soaper;
 
     /**
-     * Authentification
-     * @var string
+     * Authentification.
      */
-    public $token = null;
+    public string $token = null;
 
     /**
-     * Last call status code
-     * @var array|string|null ok|error
+     * Last call status code.
+     *
+     * @var null|array|string ok|error
      */
-    public $lastStatus = null;
+    public $lastStatus;
 
     /**
-     * Last call error Data
-     * @var array|null
+     * Last call error Data.
      */
-    public $lastError = [];
+    public ?array $lastError = [];
 
     /**
-     * Last call obtained Data
-     * @var array|null
+     * Last call obtained Data.
      */
-    public $lastResult = [];
+    public ?array $lastResult = [];
 
     /**
-     * SubReg Client
+     * SubReg Client.
      *      *
      * @param array $config
      */
@@ -71,40 +72,43 @@ class Client extends \Ease\Molecule
         $this->soaper = new \SoapClient(
             null,
             [
-            "location" => $config['location'],
-            "uri" => $config['uri']
-                ]
+                'location' => $config['location'],
+                'uri' => $config['uri'],
+            ],
         );
         $this->setObjectName();
     }
 
     /**
-     * Convert ENV keys to configuration
-     *
-     * @param array $env
+     * Convert ENV keys to configuration.
      *
      * @return array
      */
     public static function env2conf(array $env)
     {
         $conf = [];
-        if (array_key_exists('SUBREG_LOCATION', $env)) {
+
+        if (\array_key_exists('SUBREG_LOCATION', $env)) {
             $conf['location'] = $env['SUBREG_LOCATION'];
         }
-        if (array_key_exists('SUBREG_URI', $env)) {
+
+        if (\array_key_exists('SUBREG_URI', $env)) {
             $conf['uri'] = $env['SUBREG_URI'];
         }
-        if (array_key_exists('SUBREG_LOGIN', $env)) {
+
+        if (\array_key_exists('SUBREG_LOGIN', $env)) {
             $conf['login'] = $env['SUBREG_LOGIN'];
         }
-        if (array_key_exists('SUBREG_PASSWORD', $env)) {
+
+        if (\array_key_exists('SUBREG_PASSWORD', $env)) {
             $conf['password'] = $env['SUBREG_PASSWORD'];
         }
+
         return $conf;
     }
 
     /**
-     * Add Info about used user, server and libraries
+     * Add Info about used user, server and libraries.
      *
      * @param string $additions Additional note text
      *
@@ -113,46 +117,51 @@ class Client extends \Ease\Molecule
     public function logBanner($additions = null)
     {
         return $this->addStatusMessage(
-            'API ' . str_replace(
+            'API '.str_replace(
                 '://',
-                '://' . $this->config['login'] . '@',
-                $this->config['uri']
-            ) . ' php-subreg v' . self::$libVersion . ' ' . $additions,
-            'debug'
+                '://'.$this->config['login'].'@',
+                $this->config['uri'],
+            ).' php-subreg v'.self::$libVersion.' '.$additions,
+            'debug',
         );
     }
 
     /**
-     * API Call
+     * API Call.
      *
-     * @param string $command command to execute
-     * @param array  $params  command parameters
+     * @param string                                                $command command to execute
+     * @param array<string, array<string, float|int|string>|string> $params  command parameters
      *
      * @return array
      */
-    public function call($command, $params = [])
+    public function call(string $command, array $params = [])
     {
         $this->lastError = null;
         $this->lastStatus = null;
         $this->lastResult = null;
-        if ($this->token && !array_key_exists('ssid', $params)) {
+
+        if ($this->token && !\array_key_exists('ssid', $params)) {
             $params['ssid'] = $this->token;
         }
-        $responseRaw = $this->soaper->__call($command, ['data' => $params]);
+
+        $responseRaw = $this->soaper->__soapCall($command, ['data' => $params]);
 
         if (isset($responseRaw['status'])) {
             $this->lastStatus = $responseRaw['status'];
+
             switch ($responseRaw['status']) {
                 case 'ok':
-                    if (array_key_exists('data', $responseRaw)) {
+                    if (\array_key_exists('data', $responseRaw)) {
                         $this->lastResult = $responseRaw['data'];
                     } else {
                         $this->lastResult = $this->lastStatus;
                     }
+
                     break;
                 case 'error':
                     $this->logError($responseRaw['error']);
                     $this->lastResult = ['error' => $responseRaw['error']];
+
                     break;
             }
         }
@@ -161,21 +170,21 @@ class Client extends \Ease\Molecule
     }
 
     /**
-     * log Error
+     * log Error.
      *
-     * @param array $errorData
+     * @param array<int, array<int, string>> $errorData
      */
-    public function logError($errorData)
+    public function logError(array $errorData): void
     {
         $this->lastError = $errorData;
         $this->addStatusMessage(
-            $errorData['errorcode']['major'] . ' ' . $errorData['errorcode']['minor'] . ': ' . $errorData['errormsg'],
-            'error'
+            $errorData['errorcode']['major'].' '.$errorData['errorcode']['minor'].': '.$errorData['errormsg'],
+            'error',
         );
     }
 
     /**
-     * Perform Login to Server
+     * Perform Login to Server.
      *
      * @return bool success
      */
@@ -183,45 +192,45 @@ class Client extends \Ease\Molecule
     {
         $result = false;
         $params = [
-            "login" => $this->config['login'],
-            "password" => $this->config['password']
+            'login' => $this->config['login'],
+            'password' => $this->config['password'],
         ];
-        $loginResponse = $this->call("Login", $params);
-        if (array_key_exists('ssid', $loginResponse)) {
+        $loginResponse = $this->call('Login', $params);
+
+        if (\array_key_exists('ssid', $loginResponse)) {
             $this->token = $loginResponse['ssid'];
             $result = true;
-            $this->setObjectName($params['login'] . '@' . $this->getObjectName());
+            $this->setObjectName($params['login'].'@'.$this->getObjectName());
         }
+
         return $result;
     }
 
     /**
-     *  Check if domain is available or not
+     *  Check if domain is available or not.
      *
-     * @link https://subreg.cz/manual/?cmd=Check_Domain Command: Check_Domain
-     *
-     * @param string $domain
+     * @see https://subreg.cz/manual/?cmd=Check_Domain Command: Check_Domain
      *
      * @return array
      */
-    public function checkDomain($domain)
+    public function checkDomain(string $domain)
     {
         return $this->call('Check_Domain', ['domain' => $domain]);
     }
 
     /**
-     * Create a new domain
+     * Create a new domain.
      *
-     * @link https://subreg.cz/manual/?cmd=Create_Domain Order: Create_Domain
+     * @see https://subreg.cz/manual/?cmd=Create_Domain Order: Create_Domain
      *
-     * @param string $domain
-     * @param string $registrantID
-     * @param string $contactsAdminID
-     * @param string $contactsTechID
-     * @param string $authID
-     * @param array  $nsHosts          Hostnames of nameservers: ['ns.domain.cz','ns2.domain.cz']
-     * @param string $nsset            Nameserver Set (only for FRED registries (.CZ,.EE,...))
-     * @param int    $period
+     * @param string        $domain
+     * @param string        $registrantID
+     * @param string        $contactsAdminID
+     * @param string        $contactsTechID
+     * @param string        $authID
+     * @param array<string> $nsHosts         Hostnames of nameservers: ['ns.domain.cz','ns2.domain.cz']
+     * @param string        $nsset           Nameserver Set (only for FRED registries (.CZ,.EE,...))
+     * @param int           $period
      *
      * @return array
      */
@@ -235,35 +244,34 @@ class Client extends \Ease\Molecule
         $nsset = null,
         $period = 1
     ) {
-
         foreach ($nsHosts as $host) {
-            $ns[]["hostname"] = $host;
+            $ns[]['hostname'] = $host;
         }
 
-        $order = array(
-            "domain" => $domain,
-            "type" => "Create_Domain",
-            "params" => array(
-                "registrant" => array(
-                    "id" => $registrantID,
-                ),
-                "contacts" => array(
-                    "admin" => array(
-                        "id" => $contactsAdminID,
-                    ),
-                    "tech" => array(
-                        "id" => $contactsTechID,
-                    ),
-                ),
-                "ns" => array(
-                    "hosts" => $nsHosts,
-                ),
-                "params" => array(
-                    "authid" => $authID,
-                ),
-                "period" => $period
-            )
-        );
+        $order = [
+            'domain' => $domain,
+            'type' => 'Create_Domain',
+            'params' => [
+                'registrant' => [
+                    'id' => $registrantID,
+                ],
+                'contacts' => [
+                    'admin' => [
+                        'id' => $contactsAdminID,
+                    ],
+                    'tech' => [
+                        'id' => $contactsTechID,
+                    ],
+                ],
+                'ns' => [
+                    'hosts' => $nsHosts,
+                ],
+                'params' => [
+                    'authid' => $authID,
+                ],
+                'period' => $period,
+            ],
+        ];
 
         if (!empty($nsset)) {
             $order['params']['ns']['nsset'] = $nsset;
@@ -273,33 +281,31 @@ class Client extends \Ease\Molecule
     }
 
     /**
-     *  Get all domains from your account
+     *  Get all domains from your account.
      *
-     * @link https://subreg.cz/manual/?cmd=Domains_List Command: Domains_List
+     * @see https://subreg.cz/manual/?cmd=Domains_List Command: Domains_List
      *
-     * @return array
+     * @return array<int, mixed>
      */
-    public function domainsList()
+    public function domainsList(): array
     {
         return $this->call('Domains_List');
     }
 
     /**
-     *  Get pricelist from your account
+     *  Get pricelist from your account.
      *
-     * @link https://subreg.cz/manual/?cmd=Pricelist Command: Pricelist
-     *
-     * @return array
+     * @see https://subreg.cz/manual/?cmd=Pricelist Command: Pricelist
      */
-    public function pricelist()
+    public function pricelist(): array
     {
         return $this->call('Pricelist');
     }
 
     /**
-     *  Get specified pricelist from your account
+     *  Get specified pricelist from your account.
      *
-     * @link https://subreg.cz/manual/?cmd=Get_Pricelist Command: Get_Pricelist
+     * @see https://subreg.cz/manual/?cmd=Get_Pricelist Command: Get_Pricelist
      *
      * @param string $pricelist requested pricelist name
      *
@@ -311,11 +317,9 @@ class Client extends \Ease\Molecule
     }
 
     /**
-     *
-     * @link https://subreg.cz/manual/?cmd=Renew_Domain Command: Renew_Domain
+     * @see https://subreg.cz/manual/?cmd=Renew_Domain Command: Renew_Domain
      *
      * @param string $domain name
-     * @param int $years
      *
      * @return array
      */
@@ -325,7 +329,7 @@ class Client extends \Ease\Molecule
     }
 
     /**
-     * Credit_Correction
+     * Credit_Correction.
      *
      * Correct credit amount of your sub-users. The amount you specify in this
      * command will be added to current amount. Use negative values for
@@ -334,20 +338,20 @@ class Client extends \Ease\Molecule
      *
      * @see https://subreg.cz/manual/?cmd=Credit_Correction
      *
-     * @param string $username  Credit Holder Username
-     * @param int    $amount    10 or -2
-     * @param string $reason    For example "Invoice settle"
+     * @param string $username Credit Holder Username
+     * @param int    $amount   10 or -2
+     * @param string $reason   For example "Invoice settle"
      */
     public function creditCorrection($username, $amount, $reason)
     {
         return $this->call(
             'Credit_Correction',
-            ['username' => $username, 'amount' => strval($amount), 'reason' => $reason]
+            ['username' => $username, 'amount' => (string) $amount, 'reason' => $reason],
         );
     }
 
     /**
-     * Retrieve single sub-user
+     * Retrieve single sub-user.
      *
      * @param int $id ID of the user
      */
@@ -361,7 +365,7 @@ class Client extends \Ease\Molecule
      *
      * @see https://subreg.cz/manual/?cmd=Get_DNS_Zone
      *
-     * @param string $zoneName  Registered domain
+     * @param string $zoneName Registered domain
      *
      * @return array
      */
@@ -371,7 +375,7 @@ class Client extends \Ease\Molecule
     }
 
     /**
-     * Create a new order (CreateDomain, ModifyDomain, RenewDomain, ... )
+     * Create a new order (CreateDomain, ModifyDomain, RenewDomain, ... ).
      *
      * @see https://subreg.cz/manual/?cmd=Make_Order
      *
@@ -399,10 +403,6 @@ class Client extends \Ease\Molecule
      *   TransferRU_Request
      *
      *   Certificate_Request
-     *
-     * @param string $domain
-     * @param string $type
-     * @param array $data
      *
      * @return array
      */
