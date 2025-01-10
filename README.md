@@ -26,7 +26,7 @@ knihovny do vašich projektů.
 Instalace
 ---------
 
-    composer require spoje.net/subreg
+    composer require spojenet/subreg
 
 Konfigurace
 -----------

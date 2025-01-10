@@ -1,8 +1,14 @@
-php-spojenet-subreg (1.2.0) UNRELEASED; urgency=medium
+php-spojenet-subreg (1.2.1) UNRELEASED; urgency=medium
+
+  * update
+
+ -- vitex <info@vitexsoftware.cz>  Fri, 10 Jan 2025 12:21:46 +0100
+
+php-spojenet-subreg (1.2.0) unstable; urgency=medium
 
   * strict types
 
- -- vitex <info@vitexsoftware.cz>  Wed, 08 Jan 2025 15:14:54 +0100
+ -- vitex <info@vitexsoftware.cz>  Fri, 10 Jan 2025 12:21:38 +0100
 
 php-spojenet-subreg (1.1.0) unstable; urgency=medium
 

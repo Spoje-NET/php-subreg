@@ -68,7 +68,7 @@ class Client extends \Ease\Molecule
      */
     public function __construct(array $config = [])
     {
-        $this->config = $config ? self::env2conf(\Ease\Shared::instanced()->configuration) : $config;
+        $this->config = $config ?: self::env2conf(\Ease\Shared::instanced()->configuration);
         $this->soaper = new \SoapClient(
             null,
             [
