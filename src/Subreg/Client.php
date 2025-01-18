@@ -68,7 +68,7 @@ class Client extends \Ease\Molecule
      */
     public function __construct(array $config = [])
     {
-        $this->config = $config ?: self::env2conf(\Ease\Shared::instanced()->configuration);
+        $this->config = $config ?: self::env2conf();
 
         if (\array_key_exists('location', $this->config) && \array_key_exists('uri', $this->config)) {
             $this->soaper = new \SoapClient(
