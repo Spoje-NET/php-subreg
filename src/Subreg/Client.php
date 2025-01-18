@@ -89,29 +89,14 @@ class Client extends \Ease\Molecule
     /**
      * Convert ENV keys to configuration.
      *
-     * @param array<string, string> $env Env Data
-     *
      * @return array<string, string>
      */
-    public static function env2conf(array $env): array
+    public static function env2conf(): array
     {
-        $conf = [];
-
-        if (\array_key_exists('SUBREG_LOCATION', $env)) {
-            $conf['location'] = $env['SUBREG_LOCATION'];
-        }
-
-        if (\array_key_exists('SUBREG_URI', $env)) {
-            $conf['uri'] = $env['SUBREG_URI'];
-        }
-
-        if (\array_key_exists('SUBREG_LOGIN', $env)) {
-            $conf['login'] = $env['SUBREG_LOGIN'];
-        }
-
-        if (\array_key_exists('SUBREG_PASSWORD', $env)) {
-            $conf['password'] = $env['SUBREG_PASSWORD'];
-        }
+        $conf['location'] = \Ease\Shared::cfg('SUBREG_LOCATION');
+        $conf['uri'] = \Ease\Shared::cfg('SUBREG_URI');
+        $conf['login'] = \Ease\Shared::cfg('SUBREG_LOGIN');
+        $conf['password'] = \Ease\Shared::cfg('SUBREG_PASSWORD');
 
         return $conf;
     }
