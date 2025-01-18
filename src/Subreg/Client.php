@@ -148,7 +148,7 @@ class Client extends \Ease\Molecule
                     if (\array_key_exists('data', $responseRaw)) {
                         $this->lastResult = $responseRaw['data'];
                     } else {
-                        $this->lastResult = $this->lastStatus;
+                        $this->lastResult = $responseRaw;
                     }
 
                     break;
