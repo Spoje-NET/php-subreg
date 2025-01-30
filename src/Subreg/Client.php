@@ -83,7 +83,10 @@ class Client extends \Ease\Molecule
         }
 
         $this->setObjectName();
-        $this->login();
+
+        if ((\array_key_exists('autologin', $this->config) === false) || $this->config['autologin']) {
+            $this->login();
+        }
     }
 
     /**
@@ -111,11 +114,11 @@ class Client extends \Ease\Molecule
     public function logBanner($additions = null)
     {
         return $this->addStatusMessage(
-            'API '.str_replace(
+            'API ' . str_replace(
                 '://',
-                '://'.$this->config['login'].'@',
+                '://' . $this->config['login'] . '@',
                 $this->config['uri'],
-            ).' php-subreg v'.self::$libVersion.' '.$additions,
+            ) . ' php-subreg v' . self::$libVersion . ' ' . $additions,
             'debug',
         );
     }
@@ -156,7 +159,7 @@ class Client extends \Ease\Molecule
                     $this->logError($responseRaw['error']);
                     $this->lastResult = ['error' => $responseRaw['error']];
 
-                    break;
+                    throw new \RuntimeException($responseRaw['error']['errormsg'], (int) $responseRaw['error']['errorcode']['major']);
             }
         }
 
@@ -172,7 +175,7 @@ class Client extends \Ease\Molecule
     {
         $this->lastError = $errorData;
         $this->addStatusMessage(
-            $errorData['errorcode']['major'].' '.$errorData['errorcode']['minor'].': '.$errorData['errormsg'],
+            $errorData['errorcode']['major'] . ' ' . $errorData['errorcode']['minor'] . ': ' . $errorData['errormsg'],
             'error',
         );
     }
@@ -194,7 +197,7 @@ class Client extends \Ease\Molecule
         if (\array_key_exists('ssid', $loginResponse)) {
             $this->token = $loginResponse['ssid'];
             $result = true;
-            $this->setObjectName($params['login'].'@'.$this->getObjectName());
+            $this->setObjectName($params['login'] . '@' . $this->getObjectName());
         }
 
         return $result;
