@@ -404,7 +404,4 @@ class Client extends \Ease\Molecule
     {
         return $this->call('Make_Order', ['domain' => $domain, 'type' => $type, 'params' => $data]);
     }
-
-
-
 }

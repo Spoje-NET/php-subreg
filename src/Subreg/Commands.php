@@ -1,5 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
+/**
+ * This file is part of the PHPSubreg package
+ *
+ * https://github.com/Spoje-NET/php-subreg
+ *
+ * (c) Vítězslav Dvořák <http://spojenet.cz/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Subreg;
 
 class Commands extends Client
@@ -134,9 +147,14 @@ class Commands extends Client
         return $this->call('Credit_Correction', $params);
     }
 
-    public function Pricelist($params)
+    /**
+     *  Get Pricelist from your account.
+     *
+     * @see https://subreg.cz/manual/?cmd=Pricelist Command: Pricelist
+     */
+    public function pricelist(): array
     {
-        return $this->call('Pricelist', $params);
+        return $this->call('Pricelist');
     }
 
     public function Special_Pricelist($params)
@@ -179,9 +197,32 @@ class Commands extends Client
         return $this->call('List_Documents', $params);
     }
 
-    public function Users_List($params)
+    /**
+     * Summary of Users_List.
+     *
+     * @return array Users list
+     *
+     * Result fields:
+     * - int    id                Unique identification number of this user
+     * - string username          Login name of the user
+     * - string name              Real name of the user
+     * - string credit            Amount of credit available
+     * - string currency          Currency of the credit
+     * - string billing_name      Billing org/person name
+     * - string billing_street    Billing address
+     * - string billing_city      Billing city
+     * - string billing_pc        Billing postal code
+     * - string billing_country   Billing country code
+     * - string company_id        Company identification number
+     * - string company_vat       Value added tax number
+     * - string email             Contact email
+     * - string phone             Contact phone number
+     * - string last_login        Time of last successful login
+     * - int    domains_count     Count of domains
+     */
+    public function Users_List(): array
     {
-        return $this->call('Users_List', $params);
+        return $this->call('Users_List');
     }
 
     public function Info_User($params)
