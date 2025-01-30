@@ -126,7 +126,7 @@ class Client extends \Ease\Molecule
      * @param string                                                $command command to execute
      * @param array<string, array<string, float|int|string>|string> $params  command parameters
      *
-     * @return array
+     * @return array<string, array<string, float|int|string>|string> result
      */
     public function call(string $command, array $params = [])
     {
@@ -205,7 +205,7 @@ class Client extends \Ease\Molecule
      *
      * @see https://subreg.cz/manual/?cmd=Check_Domain Command: Check_Domain
      *
-     * @return array
+     * @return array<string, array<string, float|int|string>|string>
      */
     public function checkDomain(string $domain)
     {
@@ -404,4 +404,7 @@ class Client extends \Ease\Molecule
     {
         return $this->call('Make_Order', ['domain' => $domain, 'type' => $type, 'params' => $data]);
     }
+
+
+
 }
