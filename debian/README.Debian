@@ -1,7 +1,59 @@
-Subreg PHP library debian package
+Subreg PHP library Debian package
 ------------------------------
-    
+
+Debian/Ubuntu
+-------------
+
+For Linux, .deb packages are available. Please use the repository:
+
+```
+sudo apt install lsb-release wget apt-transport-https bzip2
+
+wget -qO- https://repo.vitexsoftware.com/keyring.gpg | sudo tee /etc/apt/trusted.gpg.d/vitexsoftware.gpg
+echo "deb [signed-by=/etc/apt/trusted.gpg.d/vitexsoftware.gpg]  https://repo.vitexsoftware.com  $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/vitexsoftware.list
+sudo apt update
+sudo apt install php-spojenet-subreg
+```
+
+In this case, you need to add the following to the composer.json file of your application:
+
+```json
+    "require": {
+        "php-subreg": "*",
+        "ease-core": "*"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/usr/share/php/Subreg",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "/usr/share/php/EaseCore",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
+```
+
+So, when installing dependencies, it will look something like this:
+
+    Loading composer repositories with package information
+    Installing dependencies from lock file
+      - Installing ease-core (1.1.3.3)
+        Symlinked from /usr/share/php/Ease
+
+      - Installing php-subreg (0.2.1)
+        Symlinked from /usr/share/php/Subreg
+
+And updates can be done globally for the entire system via apt-get.
+
+
     Is installed by standard way in /usr/share/php/Subreg
 
- -- Vítězslav Dvořák <vitex@hippy.cz>  Ne říj 21 15:17:56 CEST 2012
+ -- Vítězslav Dvořák <vitex@hippy.cz>  Sun Oct 21 15:17:56 CEST 2012
 
