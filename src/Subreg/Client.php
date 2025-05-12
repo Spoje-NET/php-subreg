@@ -49,7 +49,7 @@ class Client extends \Ease\Molecule
      *
      * @var null|array|string ok|error
      */
-    public $lastStatus;
+    public null|array|string $lastStatus;
 
     /**
      * Last call error Data.
@@ -239,7 +239,7 @@ class Client extends \Ease\Molecule
         $authID,
         $nsHosts = [],
         $nsset = null,
-        $period = 1
+        $period = 1,
     ) {
         foreach ($nsHosts as $host) {
             $ns[]['hostname'] = $host;

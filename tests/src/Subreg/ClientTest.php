@@ -90,7 +90,7 @@ class ClientTest extends \Test\Ease\MoleculeTest
      */
     public function testLogError(): void
     {
-        $error = ['errorcode' => ['major' => 999, 'minor' => 000],
+        $error = ['errorcode' => ['major' => 999, 'minor' => 0o00],
             'errormsg' => 'some error message'];
         $this->object->logError($error);
         $this->assertEquals($error, $this->object->lastError);
