@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "name": "spojenet/subreg",
     "description": "PHP Based Library for easy interaction with soap.subreg.cz",
     "license": "MIT",
@@ -36,5 +37,45 @@
         "allow-plugins": {
             "ergebnis/composer-normalize": true
         }
+=======
+  "name": "spojenet/subreg",
+  "description": "PHP Based Library for easy interaction with soap.subreg.cz",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Vítězslav Dvořák",
+      "email": "info@vitexsoftware.cz"
+>>>>>>> c72a69d (build pipelines update)
     }
+  ],
+  "require": {
+    "ext-soap": "*",
+    "vitexsoftware/ease-core": ">=1.49.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Subreg\\": "src/Subreg/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Test\\Ease\\": "vendor/vitexsoftware/ease-core/tests/src/Ease",
+      "Test\\Subreg\\": "testing/src/Subreg/",
+      "Test\\": "testing/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*",
+    "phpstan/phpstan": "*",
+    "friendsofphp/php-cs-fixer": "^3.89",
+    "ergebnis/composer-normalize": "^2.48",
+    "ergebnis/php-cs-fixer-config": "^6.56",
+    "phpstan/phpstan-phpunit": "2.0.8"
+  },
+  "config": {
+    "allow-plugins": {
+      "ergebnis/composer-normalize": true
+    }
+  },
+  "type": "library"
 }
