@@ -10,7 +10,7 @@
     ],
     "require": {
         "ext-soap": "*",
-        "vitexsoftware/ease-core": ">=1.50.0"
+        "vitexsoftware/ease-core": ">=1.50.1"
     },
     "autoload": {
         "psr-4": {
