@@ -1,6 +1,7 @@
-php-spojenet-subreg (1.4.0) UNRELEASED; urgency=medium
+php-spojenet-subreg (1.4.0) unstable; urgency=medium
 
   * minimal supported version of php is 8.1
+  * Modernize Debian packaging: debhelper-compat 13, pkg-php-tools, phpab
 
  -- vitex <info@vitexsoftware.cz>  Mon, 12 May 2025 12:14:10 +0200
 
