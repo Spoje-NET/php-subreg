@@ -2,6 +2,7 @@
 # Php-subreg
 
 ![Php-subreg Logo](php-subreg-logo.png?raw=true "Project Logo")
+![Packaging: deb](https://img.shields.io/badge/packaging-.deb-red?logo=debian&logoColor=white)
 
 CZ: PHP Knihovna pro snadnou práci s API [Subreg.cz](https://subreg.cz/manual/)
 
