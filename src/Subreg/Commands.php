@@ -112,6 +112,9 @@ class Commands extends Client
         return $this->call('Make_Order', $params);
     }
 
+    /**
+     * @param array{order: int|string} $params API uses key `order` (order ID), not `orderid`
+     */
     public function Info_Order($params): array
     {
         return $this->call('Info_Order', $params);

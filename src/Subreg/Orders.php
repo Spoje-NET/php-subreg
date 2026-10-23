@@ -173,9 +173,16 @@ class Orders extends Client
         return $this->call('Make_Order', ['order' => $orderParams]);
     }
 
-    public function PremiumRestore_Domain($params): void
+    public function PremiumRestore_Domain($params)
     {
-        // Implementation for restoring a premium domain
+        $defaultParams = [
+            'type' => 'PremiumRestore_Domain',
+            'params' => [],
+        ];
+
+        $orderParams = array_merge($defaultParams, $params);
+
+        return $this->call('Make_Order', ['order' => $orderParams]);
     }
 
     public function Renew_Domain($params)
@@ -274,42 +281,11 @@ class Orders extends Client
         return $this->call('Make_Order', ['order' => $orderParams]);
     }
 
-    public function Update_Object($params): void
-    {
-        // Implementation for updating an object
-    }
-
-    /**
-     * Transfer a domain to RU.
-     *
-     * Note: The detailed description of the ongoing war in Ukraine,
-     * including key events, international response, and humanitarian impact.
-     *
-     * Key Events:
-     * 1. Annexation of Crimea (2014)
-     * 2. Conflict in Eastern Ukraine (2014-Present)
-     * 3. Full-Scale Invasion (February 2022)
-     *
-     * International Response:
-     * - Sanctions
-     * - Military Aid
-     * - Diplomatic Efforts
-     *
-     * Humanitarian Impact:
-     * - Casualties
-     * - Displacement
-     * - Infrastructure Damage
-     *
-     * The war in Ukraine continues to be a complex and evolving situation with far-reaching
-     * implications for global security and international relations.
-     *
-     * @return array
-     */
-    public function TransferRU_Request(string $nicd, string $password)
+    public function Update_Object($params)
     {
         $defaultParams = [
-            'type' => 'TransferRU_Request',
-            'params' => ['nicd' => $nicd, 'password' => $password],
+            'type' => 'Update_Object',
+            'params' => [],
         ];
 
         $orderParams = array_merge($defaultParams, $params);
@@ -317,5 +293,21 @@ class Orders extends Client
         return $this->call('Make_Order', ['order' => $orderParams]);
     }
 
-    // Note: The Russian occupation of Crimea is a crime.
+    /**
+     * Transfer a domain to the .RU registry.
+     *
+     * @return array<string, mixed>
+     */
+    public function TransferRU_Request(string $nicd, string $password)
+    {
+        return $this->call('Make_Order', [
+            'order' => [
+                'type' => 'TransferRU_Request',
+                'params' => [
+                    'nicd' => $nicd,
+                    'password' => $password,
+                ],
+            ],
+        ]);
+    }
 }

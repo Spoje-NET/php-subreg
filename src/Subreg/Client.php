@@ -25,9 +25,31 @@ class Client extends \Ease\Molecule
     use \Ease\Logger\Logging;
 
     /**
+     * Default Gransy/Subreg authoritative nameservers.
+     *
+     * @var list<string>
+     */
+    public const GRANSY_NS = [
+        'ns.gransy.com',
+        'ns2.gransy.com',
+        'ns3.gransy.com',
+        'ns4.gransy.com',
+        'ns5.gransy.com',
+    ];
+
+    /**
+     * Nameserver hostnames used by Gransy domain parking (expired / not in zone).
+     *
+     * @var list<string>
+     */
+    public const PARKING_NS_SUFFIXES = [
+        'parktons.com',
+    ];
+
+    /**
      * ClientLibrary version.
      */
-    public static string $libVersion = '1.2.0';
+    public static string $libVersion = '1.5.0';
 
     /**
      * Object Configuration.
@@ -64,7 +86,7 @@ class Client extends \Ease\Molecule
     /**
      * SubReg Client.
      *
-     * @param array<string, string> $config
+     * @param array<string, bool|string> $config
      */
     public function __construct(array $config = [])
     {
@@ -92,16 +114,81 @@ class Client extends \Ease\Molecule
     /**
      * Convert ENV keys to configuration.
      *
+     * Provides production SOAP endpoints when SUBREG_LOCATION / SUBREG_URI
+     * are unset so scripts only need login credentials.
+     *
      * @return array<string, string>
      */
     public static function env2conf(): array
     {
-        $conf['location'] = \Ease\Shared::cfg('SUBREG_LOCATION');
-        $conf['uri'] = \Ease\Shared::cfg('SUBREG_URI');
-        $conf['login'] = \Ease\Shared::cfg('SUBREG_LOGIN');
-        $conf['password'] = \Ease\Shared::cfg('SUBREG_PASSWORD');
+        return [
+            'location' => (string) (\Ease\Shared::cfg('SUBREG_LOCATION') ?: 'https://soap.subreg.cz/cmd.php'),
+            'uri' => (string) (\Ease\Shared::cfg('SUBREG_URI') ?: 'https://soap.subreg.cz/soap'),
+            'login' => (string) \Ease\Shared::cfg('SUBREG_LOGIN'),
+            'password' => (string) \Ease\Shared::cfg('SUBREG_PASSWORD'),
+        ];
+    }
 
-        return $conf;
+    /**
+     * Format hostnames for ModifyNS_Domain / Create_Domain ns.hosts.
+     *
+     * @param list<string> $hostnames
+     *
+     * @return list<array{hostname: string}>
+     */
+    public static function formatNsHosts(array $hostnames): array
+    {
+        $ns = [];
+
+        foreach ($hostnames as $host) {
+            $ns[] = ['hostname' => rtrim((string) $host, '.')];
+        }
+
+        return $ns;
+    }
+
+    /**
+     * Whether nameserver list indicates Gransy parking (expired domain).
+     *
+     * @param list<string>|array<int|string, mixed> $hosts
+     */
+    public static function hostsIndicateParking(array $hosts): bool
+    {
+        foreach ($hosts as $host) {
+            if (\is_array($host)) {
+                $host = $host['hostname'] ?? $host['name'] ?? '';
+            }
+
+            $normalized = strtolower(rtrim((string) $host, '.'));
+
+            foreach (self::PARKING_NS_SUFFIXES as $suffix) {
+                if ($normalized === $suffix || str_ends_with($normalized, '.'.$suffix)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Whether account credit is at/above the autorenew threshold.
+     *
+     * Empirically Subreg skips autorenew when amount < threshold even if
+     * amount would still cover a single Renew_Domain price.
+     *
+     * @param array<string, mixed> $creditResponse Get_Credit response or its `credit` sub-array
+     */
+    public static function isCreditAboveThreshold(array $creditResponse): bool
+    {
+        $credit = isset($creditResponse['credit']) && \is_array($creditResponse['credit'])
+            ? $creditResponse['credit']
+            : $creditResponse;
+
+        $amount = (float) ($credit['amount'] ?? 0);
+        $threshold = (float) ($credit['threshold'] ?? 0);
+
+        return $amount >= $threshold;
     }
 
     /**
@@ -128,6 +215,8 @@ class Client extends \Ease\Molecule
      *
      * @param string                                                $command command to execute
      * @param array<string, array<string, float|int|string>|string> $params  command parameters
+     *
+     * @throws ApiException when Subreg returns status=error
      *
      * @return array<string, array<string, float|int|string>|string> result
      */
@@ -159,7 +248,7 @@ class Client extends \Ease\Molecule
                     $this->logError($responseRaw['error']);
                     $this->lastResult = ['error' => $responseRaw['error']];
 
-                    throw new \RuntimeException($responseRaw['error']['errormsg'], (int) $responseRaw['error']['errorcode']['major']);
+                    throw new ApiException($responseRaw['error']);
             }
         }
 
@@ -169,15 +258,15 @@ class Client extends \Ease\Molecule
     /**
      * log Error.
      *
-     * @param array<int, array<int, string>> $errorData
+     * @param array<string, mixed> $errorData
      */
     public function logError(array $errorData): void
     {
         $this->lastError = $errorData;
-        $this->addStatusMessage(
-            $errorData['errorcode']['major'].' '.$errorData['errorcode']['minor'].': '.$errorData['errormsg'],
-            'error',
-        );
+        $major = $errorData['errorcode']['major'] ?? '?';
+        $minor = $errorData['errorcode']['minor'] ?? '?';
+        $msg = $errorData['errormsg'] ?? 'unknown error';
+        $this->addStatusMessage($major.' '.$minor.': '.$msg, 'error');
     }
 
     /**
@@ -204,7 +293,7 @@ class Client extends \Ease\Molecule
     }
 
     /**
-     *  Check if domain is available or not.
+     * Check if domain is available or not.
      *
      * @see https://subreg.cz/manual/?cmd=Check_Domain Command: Check_Domain
      *
@@ -213,6 +302,62 @@ class Client extends \Ease\Molecule
     public function checkDomain(string $domain)
     {
         return $this->call('Check_Domain', ['domain' => $domain]);
+    }
+
+    /**
+     * Domain details (contacts, NS hosts, exDate, autorenew, RGP, …).
+     *
+     * @see https://subreg.cz/manual/?cmd=Info_Domain
+     *
+     * @return array<string, mixed>
+     */
+    public function infoDomain(string $domain): array
+    {
+        return $this->call('Info_Domain', ['domain' => $domain]);
+    }
+
+    /**
+     * Order details. Note: API parameter name is `order`, not `orderid`.
+     *
+     * @see https://subreg.cz/manual/?cmd=Info_Order
+     *
+     * @return array<string, mixed>
+     */
+    public function infoOrder(int|string $orderId): array
+    {
+        return $this->call('Info_Order', ['order' => $orderId]);
+    }
+
+    /**
+     * Account credit balance and autorenew threshold.
+     *
+     * @see https://subreg.cz/manual/?cmd=Get_Credit
+     *
+     * @return array{credit: array{amount: string, reserved: string, threshold: string, currency: string, users?: string}}
+     */
+    public function getCredit(): array
+    {
+        return $this->call('Get_Credit');
+    }
+
+    /**
+     * True when credit amount is at/above the configured threshold
+     * (the condition Subreg uses for autorenew).
+     */
+    public function canAutorenew(): bool
+    {
+        return self::isCreditAboveThreshold($this->getCredit());
+    }
+
+    /**
+     * True when Info_Domain hosts point at Gransy parking NS.
+     */
+    public function isDomainParked(string $domain): bool
+    {
+        $info = $this->infoDomain($domain);
+        $hosts = $info['hosts'] ?? [];
+
+        return \is_array($hosts) && self::hostsIndicateParking($hosts);
     }
 
     /**
@@ -241,9 +386,7 @@ class Client extends \Ease\Molecule
         $nsset = null,
         $period = 1,
     ) {
-        foreach ($nsHosts as $host) {
-            $ns[]['hostname'] = $host;
-        }
+        $ns = self::formatNsHosts($nsHosts);
 
         $order = [
             'domain' => $domain,
@@ -261,7 +404,7 @@ class Client extends \Ease\Molecule
                     ],
                 ],
                 'ns' => [
-                    'hosts' => $nsHosts,
+                    'hosts' => $ns,
                 ],
                 'params' => [
                     'authid' => $authID,
@@ -278,7 +421,41 @@ class Client extends \Ease\Molecule
     }
 
     /**
-     *  Get all domains from your account.
+     * Change domain nameservers.
+     *
+     * @see https://subreg.cz/manual/?cmd=ModifyNS_Domain
+     *
+     * @param list<string> $hostnames e.g. self::GRANSY_NS
+     *
+     * @return array<string, mixed>
+     */
+    public function modifyNs(string $domain, array $hostnames): array
+    {
+        return $this->call('Make_Order', [
+            'order' => [
+                'domain' => $domain,
+                'type' => 'ModifyNS_Domain',
+                'params' => [
+                    'ns' => [
+                        'hosts' => self::formatNsHosts($hostnames),
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * Restore Gransy/Subreg default nameservers after parking.
+     *
+     * @return array<string, mixed>
+     */
+    public function restoreGransyNs(string $domain): array
+    {
+        return $this->modifyNs($domain, self::GRANSY_NS);
+    }
+
+    /**
+     * Get all domains from your account.
      *
      * @see https://subreg.cz/manual/?cmd=Domains_List Command: Domains_List
      *
@@ -290,7 +467,7 @@ class Client extends \Ease\Molecule
     }
 
     /**
-     *  Get pricelist from your account.
+     * Get pricelist from your account.
      *
      * @see https://subreg.cz/manual/?cmd=Pricelist Command: Pricelist
      */
@@ -300,7 +477,7 @@ class Client extends \Ease\Molecule
     }
 
     /**
-     *  Get specified pricelist from your account.
+     * Get specified pricelist from your account.
      *
      * @see https://subreg.cz/manual/?cmd=Get_Pricelist Command: Get_Pricelist
      *
@@ -314,15 +491,32 @@ class Client extends \Ease\Molecule
     }
 
     /**
+     * Renew a domain.
+     *
+     * When $includeCurExpDate is true, fetches Info_Domain immediately before
+     * the order and sends the current exDate (avoids stale curExpDate errors
+     * during the post-expiry renewPeriod).
+     *
      * @see https://subreg.cz/manual/?cmd=Renew_Domain Command: Renew_Domain
      *
-     * @param string $domain name
-     *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function renewDomain(string $domain, int $years = 1)
+    public function renewDomain(string $domain, int $years = 1, bool $includeCurExpDate = false): array
     {
-        return $this->call('Make_Order', ['order' => ['domain' => $domain, 'params' => ['period' => $years], 'type' => 'Renew_Domain']]);
+        $params = ['period' => $years];
+
+        if ($includeCurExpDate) {
+            $info = $this->infoDomain($domain);
+            $params['curExpDate'] = $info['exDate'];
+        }
+
+        return $this->call('Make_Order', [
+            'order' => [
+                'domain' => $domain,
+                'type' => 'Renew_Domain',
+                'params' => $params,
+            ],
+        ]);
     }
 
     /**
@@ -372,39 +566,83 @@ class Client extends \Ease\Molecule
     }
 
     /**
-     * Create a new order (CreateDomain, ModifyDomain, RenewDomain, ... ).
+     * DNS analyzer (includes in_zone / dnssec flags).
+     *
+     * @see https://subreg.cz/manual/?cmd=Get_DNS_Info
+     *
+     * @return array<string, mixed>
+     */
+    public function getDnsInfo(string $domain): array
+    {
+        return $this->call('Get_DNS_Info', ['domain' => $domain]);
+    }
+
+    /**
+     * Add a single DNS record.
+     *
+     * @see https://subreg.cz/manual/?cmd=Add_DNS_Record
+     *
+     * @param array{name: string, type: string, content: string, prio?: int, ttl?: int} $record
+     *
+     * @return array<string, mixed>
+     */
+    public function addDnsRecord(string $domain, array $record): array
+    {
+        return $this->call('Add_DNS_Record', [
+            'domain' => $domain,
+            'record' => $record,
+        ]);
+    }
+
+    /**
+     * Modify an existing DNS record (must include record id).
+     *
+     * @see https://subreg.cz/manual/?cmd=Modify_DNS_Record
+     *
+     * @param array{id: int|string, type: string, content: string, prio?: int, ttl?: int, name?: string} $record
+     *
+     * @return array<string, mixed>
+     */
+    public function modifyDnsRecord(string $domain, array $record): array
+    {
+        return $this->call('Modify_DNS_Record', [
+            'domain' => $domain,
+            'record' => $record,
+        ]);
+    }
+
+    /**
+     * Delete a DNS record by id.
+     *
+     * @see https://subreg.cz/manual/?cmd=Delete_DNS_Record
+     *
+     * @return array<string, mixed>
+     */
+    public function deleteDnsRecord(string $domain, int|string $recordId): array
+    {
+        return $this->call('Delete_DNS_Record', [
+            'domain' => $domain,
+            'record' => ['id' => $recordId],
+        ]);
+    }
+
+    /**
+     * Create a new order (Create_Domain, ModifyNS_Domain, Renew_Domain, …).
      *
      * @see https://subreg.cz/manual/?cmd=Make_Order
      *
-     *   Create_Domain
-     *   PremiumCreate_Domain
-     *   Transfer_Domain
-     *   PremiumTransfer_Domain
-     *   AccountTransfer_Domain
-     *   TransferApprove_Domain
-     *   TransferDeny_Domain
-     *   TransferCancel_Domain
-     *   SKChangeOwner_Domain
-     *   Modify_Domain
-     *   ModifyNS_Domain
-     *   Delete_Domain
-     *   Restore_Domain
-     *   PremiumRestore_Domain
-     *   Renew_Domain
-     *   PremiumRenew_Domain
-     *   Backorder_Domain
-     *   Preregister_Domain
-     *   Create_Object
-     *   Transfer_Object
-     *   Update_Object
-     *   TransferRU_Request
+     * @param array<string, mixed> $params order params (period, ns, curExpDate, …)
      *
-     *   Certificate_Request
-     *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function makeOrder(string $domain, string $type, array $data = [])
+    public function makeOrder(string $domain, string $type, array $params = []): array
     {
-        return $this->call('Make_Order', ['domain' => $domain, 'type' => $type, 'params' => $data]);
+        return $this->call('Make_Order', [
+            'order' => [
+                'domain' => $domain,
+                'type' => $type,
+                'params' => $params,
+            ],
+        ]);
     }
 }

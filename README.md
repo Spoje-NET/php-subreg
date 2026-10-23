@@ -1,4 +1,3 @@
-
 # Php-subreg
 
 ![Php-subreg Logo](php-subreg-logo.png?raw=true "Project Logo")
@@ -48,14 +47,15 @@ nebo je možné přihlašovací údaje zadávat při vytváření instance tří
 
 ```php
     $sr = new \Subreg\Client([
-        "location": "https://ote-soap.subreg.cz/cmd.php",
-        "uri": "https://ote-soap.subreg.cz/soap",
-        "login": "php-subreg",
-        "password": "661a2725fb"
-            ]);
+        'location' => 'https://ote-soap.subreg.cz/cmd.php',
+        'uri' => 'https://ote-soap.subreg.cz/soap',
+        'login' => 'php-subreg',
+        'password' => '661a2725fb',
+    ]);
 ```
 
 Tento způsob nastavení má vyšší prioritu než výše uvedené definovaní konstant.
+Pokud `SUBREG_LOCATION` / `SUBREG_URI` nejsou nastavené, použijí se produkční endpointy.
 
 ## Jak to celé funguje ?
 
@@ -65,3 +65,53 @@ PHP rozšíření SoapClient komunikovat se soap.subreg.cz.
 
 <http://demoreg.net/en/settings/settings>
 
+## Praktické helpery (1.5+)
+
+```php
+$client = new \Subreg\Client();
+
+$info = $client->infoDomain('example.com');
+$credit = $client->getCredit();
+
+// Autorenew u Subregu běží jen když amount >= threshold
+// (i když by zůstatek stačil na jednu Renew_Domain).
+if (!$client->canAutorenew()) {
+    // doplň kredit nad threshold
+}
+
+// Po expiraci Gransy přepne NS na parktons → wildcard A míří na parking IP
+if ($client->isDomainParked('example.com')) {
+    $client->renewDomain('example.com', 1);       // bez curExpDate, nebo:
+    $client->renewDomain('example.com', 1, true); // s aktuálním exDate z Info_Domain
+    $client->restoreGransyNs('example.com');
+}
+
+// Info_Order: parametr API se jmenuje `order`, ne `orderid`
+$order = $client->infoOrder(32021786);
+
+// DNS
+$zone = $client->getDnsZone('example.com');
+$client->addDnsRecord('example.com', [
+    'name' => 'h2o',
+    'type' => 'A',
+    'content' => '77.87.246.248',
+    'ttl' => 600,
+]);
+```
+
+Chyby API házejí `\Subreg\ApiException` s `major` / `minor` kódy.
+
+Kontrola zdraví domény z CLI:
+
+```bash
+php Examples/DomainHealth.php example.com
+```
+
+## Známé pastičky Subreg API
+
+| Situace | Co dělat |
+| --- | --- |
+| Doména expirovala, A záznamy ukazují `46.8.8.x` / `46.8.9.x` | NS jsou `*.parktons.com` — obnovit doménu a vrátit Gransy NS (`Client::GRANSY_NS`) |
+| `autorenew=1` ale doména stejně propadla | Kredit pod `threshold` — autorenew se přeskočí |
+| `Parameter curExpDate is not equal to exDate` | Neposílat staré exDate; buď vynechat, nebo `renewDomain(..., includeCurExpDate: true)` |
+| `Field "Order" is empty` u Info_Order | Poslat `['order' => $id]`, ne `orderid` |

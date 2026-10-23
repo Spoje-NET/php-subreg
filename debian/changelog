@@ -1,3 +1,17 @@
+php-spojenet-subreg (1.5.0) unstable; urgency=medium
+
+  * Fix makeOrder() to wrap payload in order{} as required by Make_Order
+  * Fix registerDomain() to send formatted ns.hosts (hostname maps)
+  * Fix TransferRU_Request / PremiumRestore_Domain / Update_Object stubs
+  * Add ApiException with major/minor error codes
+  * Add helpers: infoDomain, infoOrder, getCredit, canAutorenew,
+    isDomainParked, modifyNs, restoreGransyNs, getDnsInfo, DNS CRUD
+  * renewDomain() can auto-include current exDate (curExpDate)
+  * Document parking NS / credit-threshold autorenew gotchas
+  * Add Examples/DomainHealth.php and offline helper unit tests
+
+ -- vitex <info@vitexsoftware.cz>  Fri, 23 Oct 2026 10:55:00 +0200
+
 php-spojenet-subreg (1.4.0) unstable; urgency=medium
 
   * minimal supported version of php is 8.1

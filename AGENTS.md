@@ -1,74 +1,39 @@
 # WARP.md - Working AI Reference for php-spojenet-subreg
 
 ## Project Overview
-**Type**: PHP Project/Debian Package
-**Purpose**: ![Php-subreg Logo](php-subreg-logo.png?raw=true "Project Logo")
-**Status**: Active
+**Type**: PHP library + Debian package (`php-spojenet-subreg`)
+**Purpose**: SOAP client for https://soap.subreg.cz (Gransy/Subreg domain registrar)
 **Repository**: git@github.com:Spoje-NET/php-subreg.git
+**Package**: `spojenet/subreg` on Packagist / `php-spojenet-subreg` .deb
 
 ## Key Technologies
-- PHP
-- Composer
-- Debian Packaging
+- PHP >= 8.1, ext-soap
+- vitexsoftware/ease-core
+- Debian packaging via phpab + pkg-php-tools
 
-## Architecture & Structure
+## Architecture
 ```
-php-spojenet-subreg/
-├── src/           # Source code
-├── tests/         # Test files
-├── docs/          # Documentation
-└── ...
+src/Subreg/
+  Client.php       # main API client + high-level helpers
+  ApiException.php # status=error → exception with major/minor
+  Commands.php     # 1:1 wrappers for Subreg commands
+  Orders.php       # Make_Order type helpers
+Examples/          # CLI samples (incl. DomainHealth.php)
+tests/             # offline helpers + live integration tests
 ```
 
-## Development Workflow
+## Gotchas learned in production (2026-10)
+- Autorenew needs `credit.amount >= credit.threshold` (not just enough for one renew).
+- Expired .com domains get NS switched to `*.parktons.com` → parking A records (`46.8.8.x`); zone data in Get_DNS_Zone can still look correct while public DNS is wrong.
+- `Info_Order` parameter is `order`, **not** `orderid`.
+- `Make_Order` payload must be `['order' => ['domain'=>…,'type'=>…,'params'=>…]]`.
+- Prefer omitting `curExpDate` on Renew_Domain, or fetch exDate immediately before the call.
 
-### Prerequisites
-- Development environment setup
-- Required dependencies
-
-### Setup Instructions
+## Development
 ```bash
-# Clone the repository
-git clone git@github.com:Spoje-NET/php-subreg.git
-cd php-spojenet-subreg
-
-# Install dependencies
 composer install
-```
-
-### Build & Run
-```bash
+./vendor/bin/phpunit                          # helpers + live (needs config.json)
+./vendor/bin/phpunit tests/src/Subreg/ClientHelpersTest.php
+php Examples/DomainHealth.php example.com
 dpkg-buildpackage -b -uc
 ```
-
-### Testing
-```bash
-composer test
-```
-
-## Key Concepts
-- **Main Components**: Core functionality and modules
-- **Configuration**: Configuration files and environment variables
-- **Integration Points**: External services and dependencies
-
-## Common Tasks
-
-### Development
-- Review code structure
-- Implement new features
-- Fix bugs and issues
-
-### Deployment
-- Build and package
-- Deploy to target environment
-- Monitor and maintain
-
-## Troubleshooting
-- **Common Issues**: Check logs and error messages
-- **Debug Commands**: Use appropriate debugging tools
-- **Support**: Check documentation and issue tracker
-
-## Additional Notes
-- Project-specific conventions
-- Development guidelines
-- Related documentation

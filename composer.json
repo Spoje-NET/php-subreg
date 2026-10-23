@@ -20,8 +20,8 @@
   "autoload-dev": {
     "psr-4": {
       "Test\\Ease\\": "vendor/vitexsoftware/ease-core/tests/src/Ease",
-      "Test\\Subreg\\": "testing/src/Subreg/",
-      "Test\\": "testing/"
+      "Test\\Subreg\\": "tests/src/Subreg/",
+      "Test\\": "tests/"
     }
   },
   "require-dev": {
